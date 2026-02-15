@@ -1,8 +1,36 @@
 :root {
   color-scheme: light;
-  font-family: 'Avenir Next', 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at 0 0, #f6f9ff 0%, #eef4f9 45%, #e8edf4 100%);
-  color: #1b2430;
+  --font-ui: 'Sora', 'Avenir Next', 'Trebuchet MS', sans-serif;
+  --text: #112136;
+  --text-muted: #445c72;
+  --bg-1: #eef5ff;
+  --bg-2: #dbe8ff;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --surface-border: #bfd0e6;
+  --accent: #2b6cb0;
+  --accent-strong: #1f4f84;
+  --accent-soft: rgba(43, 108, 176, 0.12);
+  --danger: #9f2f3f;
+  --shadow-sm: 0 4px 10px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 16px 42px rgba(16, 24, 40, 0.14);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --text: #e7f0ff;
+  --text-muted: #9ab3cd;
+  --bg-1: #091427;
+  --bg-2: #182b43;
+  --surface: rgba(12, 24, 41, 0.74);
+  --surface-strong: rgba(15, 30, 50, 0.9);
+  --surface-border: #284263;
+  --accent: #56a8ff;
+  --accent-strong: #2c8bef;
+  --accent-soft: rgba(86, 168, 255, 0.18);
+  --danger: #ff7d88;
+  --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
 }
 
 * {
@@ -11,6 +39,13 @@
 
 body {
   margin: 0;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background:
+    radial-gradient(circle at 8% 5%, color-mix(in srgb, var(--accent) 25%, transparent), transparent 35%),
+    radial-gradient(circle at 90% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 30%),
+    linear-gradient(140deg, var(--bg-1), var(--bg-2));
+  transition: background 260ms ease, color 200ms ease;
 }
 
 button,
@@ -20,19 +55,41 @@ textarea {
 }
 
 .app-shell {
+  position: relative;
   min-height: 100vh;
-  padding: 16px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.app-shell::before {
+  content: '';
+  position: absolute;
+  inset: -180px auto auto -120px;
+  width: 420px;
+  height: 420px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 23%, transparent);
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-shell > * {
+  position: relative;
+  z-index: 1;
 }
 
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid #d4dde8;
-  border-radius: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
   margin-bottom: 14px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
 }
 
 .view-switch,
@@ -43,24 +100,31 @@ textarea {
 }
 
 .toolbar button {
-  border: 1px solid #bcc9d7;
-  border-radius: 10px;
-  background: #fff;
-  padding: 8px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 8px 13px;
   cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.toolbar button:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
 }
 
 .toolbar button[data-active='true'] {
-  background: #1d4d80;
+  background: var(--accent-strong);
   color: #fff;
-  border-color: #1d4d80;
+  border-color: var(--accent-strong);
 }
 
 .import-summary {
   grid-column: 1 / -1;
   margin: 0;
   font-size: 13px;
-  color: #334e68;
+  color: var(--text-muted);
 }
 
 .board-grid {
@@ -70,16 +134,19 @@ textarea {
 }
 
 .kanban-column {
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid #d4dde8;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 14px;
   padding: 10px;
   min-height: 65vh;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  animation: reveal-column 280ms ease both;
 }
 
 .kanban-column[data-over='true'] {
-  border-color: #1d4d80;
-  box-shadow: inset 0 0 0 1px #1d4d80;
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent), var(--shadow-sm);
 }
 
 .kanban-column > header {
@@ -87,6 +154,20 @@ textarea {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.kanban-column > header h3 {
+  margin: 0;
+}
+
+.kanban-column > header span {
+  min-width: 28px;
+  text-align: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .quick-add-form {
@@ -97,15 +178,24 @@ textarea {
 
 .quick-add-form input {
   flex: 1;
-  border-radius: 8px;
-  border: 1px solid #c5d2e0;
+  border-radius: 10px;
+  border: 1px solid var(--surface-border);
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  color: var(--text);
   padding: 8px;
 }
 
+.quick-add-form input:focus,
+.task-editor-form input:focus,
+.task-editor-form textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 0;
+}
+
 .quick-add-form button {
-  border-radius: 8px;
-  border: 1px solid #1d4d80;
-  background: #1d4d80;
+  border-radius: 10px;
+  border: 1px solid var(--accent-strong);
+  background: var(--accent-strong);
   color: #fff;
   padding: 8px 12px;
 }
@@ -118,16 +208,21 @@ textarea {
 }
 
 .task-card {
-  border: 1px solid #ccd7e5;
-  border-radius: 10px;
-  background: #fff;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-  transition: box-shadow 140ms ease, border-color 140ms ease;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 140ms ease, border-color 140ms ease, transform 140ms ease;
   cursor: grab;
+}
+
+.task-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .task-card[data-dragging='true'] {
@@ -135,9 +230,9 @@ textarea {
 }
 
 .drag-overlay-card {
-  width: min(320px, calc(100vw - 32px));
-  border-color: #9bb3cc;
-  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.2);
+  width: min(340px, calc(100vw - 32px));
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
   cursor: grabbing;
 }
 
@@ -147,6 +242,7 @@ textarea {
   text-align: left;
   padding: 0;
   cursor: pointer;
+  color: var(--text);
 }
 
 .task-main h4 {
@@ -156,15 +252,15 @@ textarea {
 
 .task-main p {
   margin: 0;
-  color: #4a6178;
+  color: var(--text-muted);
   font-size: 13px;
   white-space: pre-wrap;
 }
 
 .task-archive {
-  border: 1px solid #8a1f1f;
-  background: #fff;
-  color: #8a1f1f;
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
   border-radius: 8px;
   padding: 6px 8px;
 }
@@ -175,9 +271,9 @@ textarea {
   align-items: center;
   padding: 10px 12px;
   margin-bottom: 10px;
-  background: #fde9e9;
-  border: 1px solid #f3c3c3;
-  color: #8a1f1f;
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
   border-radius: 10px;
 }
 
@@ -185,7 +281,7 @@ textarea {
 .empty-state {
   padding: 24px;
   text-align: center;
-  color: #4a6178;
+  color: var(--text-muted);
 }
 
 .archive-grid {
@@ -195,10 +291,11 @@ textarea {
 }
 
 .archive-card {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #d4dde8;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
   border-radius: 10px;
   padding: 12px;
+  backdrop-filter: blur(10px);
 }
 
 .archive-card h4 {
@@ -207,7 +304,7 @@ textarea {
 
 .archive-card p {
   margin: 0 0 10px;
-  color: #4a6178;
+  color: var(--text-muted);
   white-space: pre-wrap;
 }
 
@@ -219,17 +316,20 @@ textarea {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(5, 9, 16, 0.58);
   display: grid;
   place-items: center;
   padding: 16px;
+  backdrop-filter: blur(2px);
 }
 
 .modal-card {
   width: min(620px, 100%);
-  background: #fff;
+  background: var(--surface-strong);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
   padding: 16px;
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-card h3 {
@@ -250,14 +350,16 @@ textarea {
 
 .task-editor-form input,
 .task-editor-form textarea {
-  border: 1px solid #c5d2e0;
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  color: var(--text);
   padding: 8px;
 }
 
 .inline-error {
   margin: 0;
-  color: #8a1f1f;
+  color: var(--danger);
   font-size: 13px;
 }
 
@@ -267,6 +369,18 @@ textarea {
   gap: 8px;
 }
 
+@keyframes reveal-column {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 1080px) {
   .board-grid {
     grid-template-columns: repeat(2, minmax(240px, 1fr));
@@ -274,6 +388,10 @@ textarea {
 }
 
 @media (max-width: 720px) {
+  .app-shell {
+    padding: 14px;
+  }
+
   .toolbar {
     grid-template-columns: 1fr;
   }
