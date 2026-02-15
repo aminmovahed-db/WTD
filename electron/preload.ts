@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import type {
   ArchiveTaskInput,
   CreateTaskInput,
+  DeleteTaskInput,
   ExportJsonInput,
   ImportJsonInput,
   ImportResult,
@@ -20,6 +21,7 @@ const api: KanbanApi = {
   moveTask: (input: MoveTaskInput) => ipcRenderer.invoke('task:move', input) as Promise<void>,
   reorderColumn: (input: ReorderColumnInput) => ipcRenderer.invoke('task:reorderColumn', input) as Promise<void>,
   archiveTask: (input: ArchiveTaskInput) => ipcRenderer.invoke('task:archive', input) as Promise<void>,
+  deleteTask: (input: DeleteTaskInput) => ipcRenderer.invoke('task:delete', input) as Promise<void>,
   listArchivedTasks: () => ipcRenderer.invoke('task:listArchived') as Promise<Task[]>,
   restoreTask: (input: RestoreTaskInput) => ipcRenderer.invoke('task:restore', input) as Promise<void>,
   exportJson: (input: ExportJsonInput) => ipcRenderer.invoke('task:exportJson', input) as Promise<void>,

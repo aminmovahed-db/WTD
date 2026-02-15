@@ -41,6 +41,10 @@ export interface ArchiveTaskInput {
   id: string;
 }
 
+export interface DeleteTaskInput {
+  id: string;
+}
+
 export interface RestoreTaskInput {
   id: string;
   toColumn?: Column;
@@ -68,6 +72,7 @@ export interface KanbanApi {
   moveTask(input: MoveTaskInput): Promise<void>;
   reorderColumn(input: ReorderColumnInput): Promise<void>;
   archiveTask(input: ArchiveTaskInput): Promise<void>;
+  deleteTask(input: DeleteTaskInput): Promise<void>;
   listArchivedTasks(): Promise<Task[]>;
   restoreTask(input: RestoreTaskInput): Promise<void>;
   exportJson(input: ExportJsonInput): Promise<void>;

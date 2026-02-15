@@ -184,6 +184,15 @@ export class TaskRepository {
     })();
   }
 
+  deleteTask(id: string): void {
+    const task = this.getTask(id);
+
+    this.db.transaction(() => {
+      this.db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
+      this.normalizeColumnPositions(task.column);
+    })();
+  }
+
   restoreTask(id: string, toColumn: Column = 'BACKLOG'): void {
     if (!COLUMNS.includes(toColumn)) {
       throw new Error(`Invalid column: ${toColumn}`);

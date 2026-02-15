@@ -13,9 +13,10 @@ interface BoardProps {
   onCreateTask: (column: ColumnType, title: string) => Promise<void>;
   onEditTask: (task: Task) => void;
   onArchiveTask: (id: string) => void;
+  onDeleteTask: (id: string) => void;
 }
 
-export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask }: BoardProps): JSX.Element {
+export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask, onDeleteTask }: BoardProps): JSX.Element {
   return (
     <main className="board-grid">
       {(Object.keys(COLUMN_TITLES) as ColumnType[]).map((column) => (
@@ -27,6 +28,7 @@ export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask }:
           onCreateTask={onCreateTask}
           onEditTask={onEditTask}
           onArchiveTask={onArchiveTask}
+          onDeleteTask={onDeleteTask}
         />
       ))}
     </main>

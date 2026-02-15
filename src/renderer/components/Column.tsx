@@ -11,6 +11,7 @@ interface ColumnProps {
   onCreateTask: (column: ColumnType, title: string) => Promise<void>;
   onEditTask: (task: Task) => void;
   onArchiveTask: (id: string) => void;
+  onDeleteTask: (id: string) => void;
 }
 
 export function Column({
@@ -19,7 +20,8 @@ export function Column({
   tasks,
   onCreateTask,
   onEditTask,
-  onArchiveTask
+  onArchiveTask,
+  onDeleteTask
 }: ColumnProps): JSX.Element {
   const { setNodeRef, isOver } = useDroppable({
     id: `column:${column}`,
@@ -53,7 +55,7 @@ export function Column({
       <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
         <div className="task-list">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onEdit={onEditTask} onArchive={onArchiveTask} />
+            <TaskCard key={task.id} task={task} onEdit={onEditTask} onArchive={onArchiveTask} onDelete={onDeleteTask} />
           ))}
         </div>
       </SortableContext>

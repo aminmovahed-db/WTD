@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Database from 'better-sqlite3';
-import type { ArchiveTaskInput, CreateTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
+import type { ArchiveTaskInput, CreateTaskInput, DeleteTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
 import { initDatabase } from '../src/main/db';
 import { exportTasksToJson, importTasksFromJson } from '../src/main/db/exportImport';
 import { TaskRepository } from '../src/main/db/taskRepo';
@@ -54,6 +54,7 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
   ipcMain.handle('task:move', (_event, input: MoveTaskInput) => repo.moveTask(input.id, input.toColumn, input.toPosition));
   ipcMain.handle('task:reorderColumn', (_event, input: ReorderColumnInput) => repo.reorderColumn(input));
   ipcMain.handle('task:archive', (_event, input: ArchiveTaskInput) => repo.archiveTask(input.id));
+  ipcMain.handle('task:delete', (_event, input: DeleteTaskInput) => repo.deleteTask(input.id));
   ipcMain.handle('task:restore', (_event, input: RestoreTaskInput) => repo.restoreTask(input.id, input.toColumn));
 
   ipcMain.handle('task:exportJson', (_event, input: { filePath: string }) => {

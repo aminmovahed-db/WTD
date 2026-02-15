@@ -100,6 +100,15 @@ export default function App(): JSX.Element {
     setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   }
 
+  async function deleteTask(taskId: string): Promise<void> {
+    try {
+      await window.kanbanApi.deleteTask({ id: taskId });
+      await loadAll();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete task');
+    }
+  }
+
   async function archiveTask(taskId: string): Promise<void> {
     try {
       await window.kanbanApi.archiveTask({ id: taskId });
@@ -363,6 +372,7 @@ export default function App(): JSX.Element {
             onCreateTask={createTask}
             onEditTask={setSelectedTask}
             onArchiveTask={archiveTask}
+            onDeleteTask={deleteTask}
           />
           <DragOverlay>
             {draggingTask ? <TaskCardPreview task={draggingTask} /> : null}
