@@ -35,3 +35,10 @@ npm run dist:mac
 ```bash
 npm test
 ```
+
+## Release Notes
+
+### 0.1.0
+
+- Fixed packaged macOS app blank screen by using relative renderer asset paths (`base: './'` in Vite config).
+- Verified packaged app behavior with manual smoke checks (persistence, drag/drop, archive/restore, export/import, and layout stress).
