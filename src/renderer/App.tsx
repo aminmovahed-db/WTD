@@ -6,6 +6,7 @@ import {
   closestCorners,
   useSensor,
   useSensors,
+  type DragOverEvent,
   type DragCancelEvent,
   type DragEndEvent,
   type DragStartEvent
@@ -56,6 +57,7 @@ export default function App(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<ImportResult | null>(null);
   const [draggingTask, setDraggingTask] = useState<Task | null>(null);
+  const [dragSnapshot, setDragSnapshot] = useState<Task[] | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const groupedTasks = useMemo(() => groupTasks(tasks), [tasks]);
@@ -156,51 +158,135 @@ export default function App(): JSX.Element {
   function handleDragStart(event: DragStartEvent): void {
     const task = event.active.data.current?.task as Task | undefined;
     setDraggingTask(task ?? null);
+    setDragSnapshot(tasks);
   }
 
   function handleDragCancel(_event: DragCancelEvent): void {
+    if (dragSnapshot) {
+      setTasks(dragSnapshot);
+    }
     setDraggingTask(null);
+    setDragSnapshot(null);
   }
 
-  async function handleDragEnd(event: DragEndEvent): Promise<void> {
+  function handleDragOver(event: DragOverEvent): void {
     const { active, over } = event;
-    if (!over || active.id === over.id) {
-      setDraggingTask(null);
+    if (!over) {
       return;
     }
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    const activeTask = tasks.find((task) => task.id === activeId);
-    if (!activeTask) {
+    setTasks((prev) => {
+      const activeTask = prev.find((task) => task.id === activeId);
+      if (!activeTask) {
+        return prev;
+      }
+
+      const targetColumn = getColumnByOverId(overId, prev);
+      if (!targetColumn || targetColumn === activeTask.column) {
+        return prev;
+      }
+
+      const grouped = groupTasks(prev);
+      const sourceList = grouped[activeTask.column];
+      const targetList = grouped[targetColumn];
+      const sourceIndex = sourceList.findIndex((task) => task.id === activeId);
+
+      if (sourceIndex < 0) {
+        return prev;
+      }
+
+      let targetIndex = targetList.findIndex((task) => task.id === overId);
+      if (targetIndex < 0) {
+        targetIndex = targetList.length;
+      }
+
+      const movingTask = sourceList[sourceIndex];
+      const newSource = sourceList
+        .filter((task) => task.id !== activeId)
+        .map((task, idx) => ({ ...task, position: idx }));
+
+      const inserted = {
+        ...movingTask,
+        column: targetColumn,
+        position: Math.max(0, Math.min(targetIndex, targetList.length)),
+        completed_at: targetColumn === 'DONE' ? movingTask.completed_at ?? new Date().toISOString() : null
+      };
+
+      const newTarget = [...targetList];
+      newTarget.splice(inserted.position, 0, inserted);
+      const normalizedTarget = newTarget.map((task, idx) => ({ ...task, position: idx }));
+
+      const preview: Task[] = [];
+      COLUMNS.forEach((column) => {
+        if (column === activeTask.column) {
+          preview.push(...newSource);
+          return;
+        }
+        if (column === targetColumn) {
+          preview.push(...normalizedTarget);
+          return;
+        }
+        preview.push(...grouped[column]);
+      });
+
+      return preview;
+    });
+  }
+
+  async function handleDragEnd(event: DragEndEvent): Promise<void> {
+    const { active, over } = event;
+    if (!over) {
+      if (dragSnapshot) {
+        setTasks(dragSnapshot);
+      }
+      setDraggingTask(null);
+      setDragSnapshot(null);
+      return;
+    }
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const startTasks = dragSnapshot ?? tasks;
+    const startTask = startTasks.find((task) => task.id === activeId);
+    const finalTask = tasks.find((task) => task.id === activeId);
+    if (!startTask || !finalTask) {
+      setDraggingTask(null);
+      setDragSnapshot(null);
       return;
     }
 
     const targetColumn = getColumnByOverId(overId, tasks);
     if (!targetColumn) {
+      setDraggingTask(null);
+      setDragSnapshot(null);
       return;
     }
 
-    const sourceColumn = activeTask.column;
-
-    const sourceList = groupedTasks[sourceColumn];
-    const targetList = groupedTasks[targetColumn];
-
-    const sourceIndex = sourceList.findIndex((task) => task.id === activeId);
-    if (sourceIndex === -1) {
-      return;
-    }
+    const sourceColumn = startTask.column;
+    const finalColumn = finalTask.column;
+    const targetList = groupedTasks[finalColumn];
 
     let targetIndex = targetList.findIndex((task) => task.id === overId);
     if (targetIndex < 0) {
       targetIndex = targetList.length;
     }
 
-    const snapshot = tasks;
+    const snapshot = dragSnapshot ?? tasks;
 
     try {
-      if (sourceColumn === targetColumn) {
+      if (sourceColumn === finalColumn) {
+        const sourceList = groupedTasks[sourceColumn];
+        const sourceIndex = sourceList.findIndex((task) => task.id === activeId);
+        if (sourceIndex === -1) {
+          setDraggingTask(null);
+          setDragSnapshot(null);
+          return;
+        }
+
         const ids = sourceList.map((task) => task.id);
         const overIndex = ids.indexOf(overId);
         const finalTargetIndex = overIndex >= 0 ? overIndex : targetIndex;
@@ -221,41 +307,11 @@ export default function App(): JSX.Element {
           orderedIds: reordered.map((task) => task.id)
         });
       } else {
-        const movingTask = sourceList[sourceIndex];
-        const newSource = sourceList
-          .filter((task) => task.id !== activeId)
-          .map((task, idx) => ({ ...task, position: idx }));
-
-        const inserted = {
-          ...movingTask,
-          column: targetColumn,
-          position: Math.max(0, Math.min(targetIndex, targetList.length)),
-          completed_at: targetColumn === 'DONE' ? new Date().toISOString() : null
-        };
-
-        const newTarget = [...targetList];
-        newTarget.splice(inserted.position, 0, inserted);
-        const normalizedTarget = newTarget.map((task, idx) => ({ ...task, position: idx }));
-
-        const optimistic: Task[] = [];
-        COLUMNS.forEach((column) => {
-          if (column === sourceColumn) {
-            optimistic.push(...newSource);
-            return;
-          }
-          if (column === targetColumn) {
-            optimistic.push(...normalizedTarget);
-            return;
-          }
-          optimistic.push(...groupedTasks[column]);
-        });
-
-        setTasks(optimistic);
-
+        const toPosition = targetList.findIndex((task) => task.id === activeId);
         await window.kanbanApi.moveTask({
           id: activeId,
-          toColumn: targetColumn,
-          toPosition: inserted.position
+          toColumn: finalColumn,
+          toPosition: toPosition >= 0 ? toPosition : targetList.length
         });
       }
 
@@ -266,6 +322,7 @@ export default function App(): JSX.Element {
       setError(err instanceof Error ? err.message : 'Failed to move task');
     } finally {
       setDraggingTask(null);
+      setDragSnapshot(null);
     }
   }
 
@@ -297,6 +354,7 @@ export default function App(): JSX.Element {
           sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
           onDragCancel={handleDragCancel}
           onDragEnd={handleDragEnd}
         >
