@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   closestCorners,
   useSensor,
   useSensors,
-  type DragEndEvent
+  type DragCancelEvent,
+  type DragEndEvent,
+  type DragStartEvent
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { ArchiveView } from './components/ArchiveView';
 import { Board } from './components/Board';
+import { TaskCardPreview } from './components/TaskCardPreview';
 import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
 import { COLUMNS, type Column, type ImportResult, type Task } from '../shared/types';
@@ -51,6 +55,7 @@ export default function App(): JSX.Element {
   const [showArchive, setShowArchive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<ImportResult | null>(null);
+  const [draggingTask, setDraggingTask] = useState<Task | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const groupedTasks = useMemo(() => groupTasks(tasks), [tasks]);
@@ -148,9 +153,19 @@ export default function App(): JSX.Element {
     }
   }
 
+  function handleDragStart(event: DragStartEvent): void {
+    const task = event.active.data.current?.task as Task | undefined;
+    setDraggingTask(task ?? null);
+  }
+
+  function handleDragCancel(_event: DragCancelEvent): void {
+    setDraggingTask(null);
+  }
+
   async function handleDragEnd(event: DragEndEvent): Promise<void> {
     const { active, over } = event;
     if (!over || active.id === over.id) {
+      setDraggingTask(null);
       return;
     }
 
@@ -249,6 +264,8 @@ export default function App(): JSX.Element {
     } catch (err) {
       setTasks(snapshot);
       setError(err instanceof Error ? err.message : 'Failed to move task');
+    } finally {
+      setDraggingTask(null);
     }
   }
 
@@ -276,13 +293,22 @@ export default function App(): JSX.Element {
       ) : showArchive ? (
         <ArchiveView tasks={archivedTasks} onRestore={restoreTask} />
       ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragCancel={handleDragCancel}
+          onDragEnd={handleDragEnd}
+        >
           <Board
             groupedTasks={groupedTasks}
             onCreateTask={createTask}
             onEditTask={setSelectedTask}
             onArchiveTask={archiveTask}
           />
+          <DragOverlay>
+            {draggingTask ? <TaskCardPreview task={draggingTask} /> : null}
+          </DragOverlay>
         </DndContext>
       )}
 

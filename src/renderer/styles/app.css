@@ -125,6 +125,20 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: box-shadow 140ms ease, border-color 140ms ease;
+  cursor: grab;
+}
+
+.task-card[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.drag-overlay-card {
+  width: min(320px, calc(100vw - 32px));
+  border-color: #9bb3cc;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.2);
+  cursor: grabbing;
 }
 
 .task-main {

@@ -18,11 +18,18 @@ export function TaskCard({ task, onEdit, onArchive }: TaskCardProps): JSX.Elemen
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.45 : 1
+    opacity: isDragging ? 0.1 : 1
   };
 
   return (
-    <article ref={setNodeRef} style={style} className="task-card" {...attributes} {...listeners}>
+    <article
+      ref={setNodeRef}
+      style={style}
+      className="task-card"
+      data-dragging={isDragging || undefined}
+      {...attributes}
+      {...listeners}
+    >
       <button className="task-main" onClick={() => onEdit(task)} type="button">
         <h4>{task.title}</h4>
         {task.notes ? <p>{task.notes}</p> : null}
