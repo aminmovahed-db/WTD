@@ -28,6 +28,10 @@ function createWindow(): void {
     }
   });
 
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.error('Page failed to load:', errorCode, errorDescription);
+  });
+
   const devServerUrl = process.env.VITE_DEV_SERVER_URL;
   if (devServerUrl) {
     mainWindow.loadURL(devServerUrl).catch((err) => {
@@ -35,6 +39,7 @@ function createWindow(): void {
     });
   } else {
     const indexPath = path.join(appPath, 'dist', 'index.html');
+    console.log('Loading index from:', indexPath);
     mainWindow.loadFile(indexPath).catch((err) => {
       console.error('Failed to load app', err);
     });
@@ -91,17 +96,24 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
 }
 
 app.whenReady().then(() => {
-  const db = initDatabase(app.getPath('userData'));
-  const repo = new TaskRepository(db);
+  try {
+    const db = initDatabase(app.getPath('userData'));
+    const repo = new TaskRepository(db);
 
-  registerIpcHandlers(repo, db);
-  createWindow();
+    registerIpcHandlers(repo, db);
+    createWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
+    });
+  } catch (err) {
+    console.error('Failed to initialize app:', err);
+    dialog.showErrorBox('Startup Error', String(err));
+  }
+}).catch((err) => {
+  console.error('app.whenReady() failed:', err);
 });
 
 app.on('window-all-closed', () => {

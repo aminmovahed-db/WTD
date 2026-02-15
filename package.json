@@ -9,7 +9,7 @@
     "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron:watch\" \"npm:dev:electron\"",
     "dev:renderer": "vite",
     "dev:electron:watch": "tsc -p tsconfig.electron.json --watch",
-    "dev:electron": "wait-on tcp:5173 file:dist-electron/electron/main.js file:dist-electron/electron/preload.js && electron-rebuild -f -w better-sqlite3 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "dev:electron": "wait-on tcp:5173 file:dist-electron/electron/main.js file:dist-electron/electron/preload.js && npm run rebuild:electron && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
     "build": "npm run build:renderer && npm run build:electron",
     "build:renderer": "vite build",
     "build:electron": "tsc -p tsconfig.electron.json",
@@ -17,7 +17,8 @@
     "pretest": "npm rebuild better-sqlite3",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dist:mac": "npm run build && electron-builder --mac dmg"
+    "rebuild:electron": "cd node_modules/better-sqlite3 && node-gyp rebuild --target=$(node -e \"console.log(require('../../node_modules/electron/package.json').version)\") --arch=arm64 --dist-url=https://electronjs.org/headers --release --devdir=$HOME/.electron-gyp",
+    "dist:mac": "npm run build && npm run rebuild:electron && electron-builder --mac dmg"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -56,6 +57,7 @@
       "dist-electron/**",
       "package.json"
     ],
+    "npmRebuild": false,
     "mac": {
       "target": [
         "dmg"
