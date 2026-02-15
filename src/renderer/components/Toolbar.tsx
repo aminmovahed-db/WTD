@@ -6,8 +6,6 @@ interface ToolbarProps {
   onExport: () => Promise<void>;
   onImport: (mode: 'merge' | 'replace') => Promise<void>;
   importSummary: ImportResult | null;
-  theme: 'light' | 'dark';
-  onToggleTheme: () => void;
 }
 
 export function Toolbar({
@@ -15,9 +13,7 @@ export function Toolbar({
   onToggleView,
   onExport,
   onImport,
-  importSummary,
-  theme,
-  onToggleTheme
+  importSummary
 }: ToolbarProps): JSX.Element {
   return (
     <header className="toolbar">
@@ -30,9 +26,6 @@ export function Toolbar({
         </button>
       </div>
       <div className="toolbar-actions">
-        <button type="button" onClick={onToggleTheme}>
-          {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-        </button>
         <button type="button" onClick={() => onExport()}>
           Export JSON
         </button>

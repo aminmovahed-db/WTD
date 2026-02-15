@@ -19,10 +19,6 @@ import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
 import { COLUMNS, type Column, type ImportResult, type Task } from '../shared/types';
 
-type Theme = 'light' | 'dark';
-
-const THEME_STORAGE_KEY = 'daily-kanban-theme';
-
 function groupTasks(tasks: Task[]): Record<Column, Task[]> {
   const grouped: Record<Column, Task[]> = {
     BACKLOG: [],
@@ -60,13 +56,6 @@ export default function App(): JSX.Element {
   const [showArchive, setShowArchive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<ImportResult | null>(null);
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark') {
-      return stored;
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
   const [draggingTask, setDraggingTask] = useState<Task | null>(null);
   const [dragSnapshot, setDragSnapshot] = useState<Task[] | null>(null);
 
@@ -95,11 +84,6 @@ export default function App(): JSX.Element {
       // no-op: handled in loadAll
     });
   }, []);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme]);
 
   async function createTask(column: Column, title: string): Promise<void> {
     try {
@@ -350,8 +334,6 @@ export default function App(): JSX.Element {
         onExport={handleExport}
         onImport={handleImport}
         importSummary={importSummary}
-        theme={theme}
-        onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
       />
 
       {error ? (

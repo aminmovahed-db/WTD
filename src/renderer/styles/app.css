@@ -1,23 +1,6 @@
 :root {
-  color-scheme: light;
-  --font-ui: 'Sora', 'Avenir Next', 'Trebuchet MS', sans-serif;
-  --text: #112136;
-  --text-muted: #445c72;
-  --bg-1: #eef5ff;
-  --bg-2: #dbe8ff;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --surface-border: #bfd0e6;
-  --accent: #2b6cb0;
-  --accent-strong: #1f4f84;
-  --accent-soft: rgba(43, 108, 176, 0.12);
-  --danger: #9f2f3f;
-  --shadow-sm: 0 4px 10px rgba(16, 24, 40, 0.08);
-  --shadow-lg: 0 16px 42px rgba(16, 24, 40, 0.14);
-}
-
-:root[data-theme='dark'] {
   color-scheme: dark;
+  --font-ui: 'Sora', 'Avenir Next', 'Trebuchet MS', sans-serif;
   --text: #e7f0ff;
   --text-muted: #9ab3cd;
   --bg-1: #091427;
