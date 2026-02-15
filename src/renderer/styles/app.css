@@ -240,14 +240,6 @@ textarea {
   white-space: pre-wrap;
 }
 
-.task-archive {
-  border: 1px solid var(--danger);
-  background: transparent;
-  color: var(--danger);
-  border-radius: 8px;
-  padding: 6px 8px;
-}
-
 .toast {
   display: flex;
   justify-content: space-between;

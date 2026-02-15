@@ -88,6 +88,11 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
     };
   }, [contextMenu.visible, closeMenu]);
 
+  function handleArchive(): void {
+    closeMenu();
+    onArchive(task.id);
+  }
+
   function handleDelete(): void {
     closeMenu();
     onDelete(task.id);
@@ -113,11 +118,6 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
           <h4>{task.title}</h4>
           {task.notes ? <p>{task.notes}</p> : null}
         </button>
-        {task.column === 'DONE' ? (
-          <button className="task-archive" onClick={() => onArchive(task.id)} type="button">
-            Archive
-          </button>
-        ) : null}
       </article>
 
       {contextMenu.visible
@@ -127,6 +127,15 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
               className="context-menu"
               style={{ top: contextMenu.y, left: contextMenu.x }}
             >
+              {task.column === 'DONE' ? (
+                <button
+                  type="button"
+                  className="context-menu-item"
+                  onClick={handleArchive}
+                >
+                  Archive
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="context-menu-item context-menu-item--danger"
