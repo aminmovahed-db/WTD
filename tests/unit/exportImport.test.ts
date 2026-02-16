@@ -31,7 +31,7 @@ describe('export/import', () => {
   it('exports and imports tasks with merge conflict reporting', () => {
     const dbA = makeDb();
     const repoA = new TaskRepository(dbA);
-    const task = repoA.createTask({ title: 'task A' });
+    const task = repoA.createTask({ title: 'task A', priority: 'HIGH' });
 
     const exportPath = path.join(os.tmpdir(), `kanban-export-${randomUUID()}.json`);
     tempPaths.push(exportPath);
@@ -43,6 +43,7 @@ describe('export/import', () => {
 
     const firstImport = importTasksFromJson(dbB, exportPath, 'merge');
     expect(firstImport.imported).toBe(1);
+    expect(repoB.listActiveTasks().find((t) => t.id === task.id)?.priority).toBe('HIGH');
 
     const secondImport = importTasksFromJson(dbB, exportPath, 'merge');
     expect(secondImport.imported).toBe(0);

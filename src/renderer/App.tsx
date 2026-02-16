@@ -17,7 +17,7 @@ import { Board } from './components/Board';
 import { TaskCardPreview } from './components/TaskCardPreview';
 import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
-import { COLUMNS, type Column, type ImportResult, type Task } from '../shared/types';
+import { COLUMNS, type Column, type ImportResult, type Priority, type Task } from '../shared/types';
 
 function groupTasks(tasks: Task[]): Record<Column, Task[]> {
   const grouped: Record<Column, Task[]> = {
@@ -95,7 +95,7 @@ export default function App(): JSX.Element {
     }
   }
 
-  async function saveTask(taskId: string, updates: { title?: string; notes?: string }): Promise<void> {
+  async function saveTask(taskId: string, updates: { title?: string; notes?: string; priority?: Priority }): Promise<void> {
     const updated = await window.kanbanApi.updateTask({ id: taskId, ...updates });
     setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   }

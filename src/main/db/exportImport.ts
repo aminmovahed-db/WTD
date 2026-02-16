@@ -9,12 +9,13 @@ interface ExportPayload {
   tasks: Task[];
 }
 
-const SUPPORTED_SCHEMA_VERSION = 1;
+const EXPORT_SCHEMA_VERSION = 2;
+const SUPPORTED_IMPORT_SCHEMA_VERSIONS = new Set([1, 2]);
 
 function parsePayload(raw: string): ExportPayload {
   const parsed = JSON.parse(raw) as Partial<ExportPayload>;
 
-  if (parsed.schemaVersion !== SUPPORTED_SCHEMA_VERSION) {
+  if (!SUPPORTED_IMPORT_SCHEMA_VERSIONS.has(parsed.schemaVersion ?? -1)) {
     throw new Error(`Unsupported schemaVersion: ${String(parsed.schemaVersion)}`);
   }
 
@@ -36,7 +37,7 @@ function parsePayload(raw: string): ExportPayload {
   });
 
   return {
-    schemaVersion: SUPPORTED_SCHEMA_VERSION,
+    schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: typeof parsed.exportedAt === 'string' ? parsed.exportedAt : new Date().toISOString(),
     tasks
   };
@@ -45,7 +46,7 @@ function parsePayload(raw: string): ExportPayload {
 export function exportTasksToJson(db: Database.Database, filePath: string): void {
   const tasks = db.prepare('SELECT * FROM tasks ORDER BY created_at ASC').all() as Task[];
   const payload: ExportPayload = {
-    schemaVersion: SUPPORTED_SCHEMA_VERSION,
+    schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
     tasks
   };
@@ -74,9 +75,9 @@ export function importTasksFromJson(
 
     const insert = db.prepare(
       `INSERT INTO tasks (
-        id, title, notes, column, position, created_at, updated_at, archived_at, completed_at
+        id, title, notes, priority, column, position, created_at, updated_at, archived_at, completed_at
       ) VALUES (
-        @id, @title, @notes, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+        @id, @title, @notes, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
       )`
     );
 

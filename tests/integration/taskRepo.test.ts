@@ -28,12 +28,68 @@ afterEach(() => {
 });
 
 describe('TaskRepository lifecycle', () => {
+  it('migrates a v1 database and backfills LOW priority', () => {
+    const dbPath = path.join(os.tmpdir(), `kanban-migration-${randomUUID()}.sqlite`);
+    tempPaths.push(dbPath);
+    const db = new Database(dbPath);
+
+    db.exec(`
+      CREATE TABLE meta (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
+      CREATE TABLE tasks (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        notes TEXT NOT NULL DEFAULT '',
+        column TEXT NOT NULL CHECK (column IN ('BACKLOG', 'TODAY', 'DOING', 'DONE')),
+        position INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        archived_at TEXT,
+        completed_at TEXT
+      );
+      INSERT INTO meta(key, value) VALUES ('schema_version', '1');
+    `);
+
+    const now = new Date().toISOString();
+    db.prepare(
+      `INSERT INTO tasks (
+        id, title, notes, column, position, created_at, updated_at, archived_at, completed_at
+      ) VALUES (
+        @id, @title, @notes, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+      )`
+    ).run({
+      id: randomUUID(),
+      title: 'Legacy task',
+      notes: '',
+      column: 'BACKLOG',
+      position: 0,
+      created_at: now,
+      updated_at: now,
+      archived_at: null,
+      completed_at: null
+    });
+
+    runMigrations(db);
+    const row = db.prepare('SELECT priority FROM tasks LIMIT 1').get() as { priority: string };
+    expect(row.priority).toBe('LOW');
+
+    const repo = new TaskRepository(db);
+    const created = repo.createTask({ title: 'New task', priority: 'MEDIUM' });
+    expect(created.priority).toBe('MEDIUM');
+
+    db.close();
+  });
+
   it('creates, updates, moves, archives, and restores', () => {
     const { db, repo } = createRepository();
     const task = repo.createTask({ title: 'Task 1', column: 'BACKLOG' });
+    expect(task.priority).toBe('LOW');
 
-    const updated = repo.updateTask({ id: task.id, notes: 'note' });
+    const updated = repo.updateTask({ id: task.id, notes: 'note', priority: 'HIGH' });
     expect(updated.notes).toBe('note');
+    expect(updated.priority).toBe('HIGH');
 
     repo.moveTask(task.id, 'TODAY', 0);
     expect(repo.listActiveTasks().find((t) => t.id === task.id)?.column).toBe('TODAY');

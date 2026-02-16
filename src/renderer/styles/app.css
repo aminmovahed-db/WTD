@@ -12,6 +12,15 @@
   --accent-strong: #2c8bef;
   --accent-soft: rgba(86, 168, 255, 0.18);
   --danger: #ff7d88;
+  --priority-low: #51d88a;
+  --priority-medium: #f7c94a;
+  --priority-high: #ff6868;
+  --priority-low-bg: rgba(81, 216, 138, 0.14);
+  --priority-low-border: rgba(81, 216, 138, 0.46);
+  --priority-medium-bg: rgba(247, 201, 74, 0.14);
+  --priority-medium-border: rgba(247, 201, 74, 0.44);
+  --priority-high-bg: rgba(255, 104, 104, 0.14);
+  --priority-high-border: rgba(255, 104, 104, 0.52);
   --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.45);
 }
@@ -33,7 +42,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -170,7 +180,8 @@ textarea {
 
 .quick-add-form input:focus,
 .task-editor-form input:focus,
-.task-editor-form textarea:focus {
+.task-editor-form textarea:focus,
+.task-editor-form select:focus {
   outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
   outline-offset: 0;
 }
@@ -226,10 +237,13 @@ textarea {
   padding: 0;
   cursor: pointer;
   color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .task-main h4 {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: 15px;
 }
 
@@ -238,6 +252,45 @@ textarea {
   color: var(--text-muted);
   font-size: 13px;
   white-space: pre-wrap;
+}
+
+.priority-tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.priority-tag-arrows {
+  line-height: 1;
+  letter-spacing: 0.3px;
+}
+
+.priority-tag-label {
+  letter-spacing: 0.2px;
+}
+
+.priority-tag--low {
+  color: var(--priority-low);
+  background: var(--priority-low-bg);
+  border-color: var(--priority-low-border);
+}
+
+.priority-tag--medium {
+  color: var(--priority-medium);
+  background: var(--priority-medium-bg);
+  border-color: var(--priority-medium-border);
+}
+
+.priority-tag--high {
+  color: var(--priority-high);
+  background: var(--priority-high-bg);
+  border-color: var(--priority-high-border);
 }
 
 .toast {
@@ -324,7 +377,8 @@ textarea {
 }
 
 .task-editor-form input,
-.task-editor-form textarea {
+.task-editor-form textarea,
+.task-editor-form select {
   border: 1px solid var(--surface-border);
   border-radius: 8px;
   background: color-mix(in srgb, var(--surface-strong) 96%, transparent);

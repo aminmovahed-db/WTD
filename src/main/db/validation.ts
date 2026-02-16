@@ -1,12 +1,14 @@
 import { z } from 'zod';
-import { COLUMNS, type Column, type Task } from '../../shared/types';
+import { COLUMNS, PRIORITIES, type Column, type Task } from '../../shared/types';
 
 const columnSchema = z.enum(COLUMNS);
+const prioritySchema = z.enum(PRIORITIES);
 
 export const taskValidationSchema = z.object({
   id: z.string().uuid(),
   title: z.string().trim().min(1).max(200),
   notes: z.string().max(5000),
+  priority: prioritySchema.default('LOW'),
   column: columnSchema,
   position: z.number().int().nonnegative(),
   created_at: z.string(),
@@ -18,6 +20,7 @@ export const taskValidationSchema = z.object({
 export const createTaskInputSchema = z.object({
   title: z.string().trim().min(1).max(200),
   notes: z.string().max(5000).optional(),
+  priority: prioritySchema.optional(),
   column: columnSchema.optional()
 });
 
@@ -25,9 +28,10 @@ export const updateTaskInputSchema = z
   .object({
     id: z.string().uuid(),
     title: z.string().trim().min(1).max(200).optional(),
-    notes: z.string().max(5000).optional()
+    notes: z.string().max(5000).optional(),
+    priority: prioritySchema.optional()
   })
-  .refine((v) => v.title !== undefined || v.notes !== undefined, {
+  .refine((v) => v.title !== undefined || v.notes !== undefined || v.priority !== undefined, {
     message: 'At least one field must be provided'
   });
 

@@ -52,6 +52,7 @@ export class TaskRepository {
       id: uuidv4(),
       title: normalizeTitle(parsed.title),
       notes: parsed.notes ?? '',
+      priority: parsed.priority ?? 'LOW',
       column,
       position,
       created_at: now,
@@ -63,9 +64,9 @@ export class TaskRepository {
     this.db
       .prepare(
         `INSERT INTO tasks (
-          id, title, notes, column, position, created_at, updated_at, archived_at, completed_at
+          id, title, notes, priority, column, position, created_at, updated_at, archived_at, completed_at
         ) VALUES (
-          @id, @title, @notes, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+          @id, @title, @notes, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
         )`
       )
       .run(task);
@@ -81,6 +82,7 @@ export class TaskRepository {
       ...existing,
       title: parsed.title !== undefined ? normalizeTitle(parsed.title) : existing.title,
       notes: parsed.notes !== undefined ? parsed.notes : existing.notes,
+      priority: parsed.priority !== undefined ? parsed.priority : existing.priority,
       updated_at: new Date().toISOString()
     };
 
@@ -89,6 +91,7 @@ export class TaskRepository {
         `UPDATE tasks
          SET title = @title,
              notes = @notes,
+             priority = @priority,
              updated_at = @updated_at
          WHERE id = @id`
       )

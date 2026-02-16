@@ -9,6 +9,7 @@ describe('validation', () => {
 
     expect(() => createTaskInputSchema.parse({ title: '   ' })).toThrow();
     expect(() => createTaskInputSchema.parse({ title: 'x'.repeat(201) })).toThrow();
+    expect(() => createTaskInputSchema.parse({ title: 'ok', priority: 'URGENT' })).toThrow();
   });
 
   it('normalizes title', () => {
@@ -19,5 +20,7 @@ describe('validation', () => {
     expect(() => updateTaskInputSchema.parse({ id: randomUUID() })).toThrow();
     const parsed = updateTaskInputSchema.parse({ id: randomUUID(), notes: 'new note' });
     expect(parsed.notes).toBe('new note');
+    const priorityUpdate = updateTaskInputSchema.parse({ id: randomUUID(), priority: 'MEDIUM' });
+    expect(priorityUpdate.priority).toBe('MEDIUM');
   });
 });

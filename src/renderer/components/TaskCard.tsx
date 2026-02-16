@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { Task } from '../../shared/types';
+import { PriorityTag } from './PriorityTag';
 
 interface TaskCardProps {
   task: Task;
@@ -115,6 +116,7 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
         {...listeners}
       >
         <button className="task-main" onClick={() => onEdit(task)} type="button">
+          <PriorityTag priority={task.priority} />
           <h4>{task.title}</h4>
           {task.notes ? <p>{task.notes}</p> : null}
         </button>

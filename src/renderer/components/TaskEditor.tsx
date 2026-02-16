@@ -1,15 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import type { Task } from '../../shared/types';
+import { PRIORITIES, type Priority, type Task } from '../../shared/types';
 
 interface TaskEditorProps {
   task: Task | null;
   onClose: () => void;
-  onSave: (taskId: string, updates: { title?: string; notes?: string }) => Promise<void>;
+  onSave: (taskId: string, updates: { title?: string; notes?: string; priority?: Priority }) => Promise<void>;
 }
 
 export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Element | null {
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
+  const [priority, setPriority] = useState<Priority>('LOW');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,6 +21,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
 
     setTitle(task.title);
     setNotes(task.notes);
+    setPriority(task.priority);
     setError(null);
   }, [task]);
 
@@ -39,7 +41,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
 
     setSaving(true);
     try {
-      await onSave(task.id, { title: trimmed, notes });
+      await onSave(task.id, { title: trimmed, notes, priority });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task');
@@ -62,6 +64,16 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
           <label>
             Notes
             <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={5000} rows={8} />
+          </label>
+          <label>
+            Priority
+            <select value={priority} onChange={(event) => setPriority(event.target.value as Priority)}>
+              {PRIORITIES.map((item) => (
+                <option key={item} value={item}>
+                  {item[0] + item.slice(1).toLowerCase()}
+                </option>
+              ))}
+            </select>
           </label>
           {error ? <p className="inline-error">{error}</p> : null}
           <div className="editor-actions">
