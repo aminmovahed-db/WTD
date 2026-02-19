@@ -10,8 +10,8 @@ const PRIORITY_META: Record<Priority, { label: string; arrows: number }> = {
   HIGH: { label: 'High', arrows: 3 }
 };
 
-function priorityStars(count: number): string {
-  return Array.from({ length: count }, () => '⭐️').join(' ');
+function priorityFlames(count: number): string {
+  return Array.from({ length: count }, () => '🔥').join('');
 }
 
 export function PriorityTag({ priority }: PriorityTagProps): JSX.Element {
@@ -19,7 +19,7 @@ export function PriorityTag({ priority }: PriorityTagProps): JSX.Element {
   return (
     <span className={`priority-tag priority-tag--${priority.toLowerCase()}`} title={`${meta.label} priority`}>
       <span className="priority-tag-arrows" aria-hidden="true">
-        {priorityStars(meta.arrows)}
+        {priorityFlames(meta.arrows)}
       </span>
       <span className="priority-tag-label sr-only">{meta.label}</span>
     </span>
