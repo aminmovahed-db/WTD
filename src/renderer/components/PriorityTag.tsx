@@ -21,7 +21,7 @@ export function PriorityTag({ priority }: PriorityTagProps): JSX.Element {
       <span className="priority-tag-arrows" aria-hidden="true">
         {priorityStars(meta.arrows)}
       </span>
-      <span className="priority-tag-label">{meta.label}</span>
+      <span className="priority-tag-label sr-only">{meta.label}</span>
     </span>
   );
 }
