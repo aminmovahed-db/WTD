@@ -125,6 +125,7 @@ select {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .filter-btn {
