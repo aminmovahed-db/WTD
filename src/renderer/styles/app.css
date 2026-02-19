@@ -169,6 +169,19 @@ select {
   width: min(440px, 100%);
 }
 
+.filter-section {
+  margin-bottom: 10px;
+}
+
+.filter-section-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .tag-filter-empty {
   color: var(--text-muted);
   font-size: 13px;

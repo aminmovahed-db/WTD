@@ -17,7 +17,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { ArchiveView } from './components/ArchiveView';
 import { Board } from './components/Board';
-import { TagFilter } from './components/TagFilter';
+import { TagFilter, type FilterState } from './components/TagFilter';
 import { TaskCardPreview } from './components/TaskCardPreview';
 import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
@@ -102,8 +102,8 @@ export default function App(): JSX.Element {
   const [importSummary, setImportSummary] = useState<ImportResult | null>(null);
   const [draggingTask, setDraggingTask] = useState<Task | null>(null);
   const [dragSnapshot, setDragSnapshot] = useState<Task[] | null>(null);
-  const [filterTags, setFilterTags] = useState<string[]>([]);
-  const [showTagFilter, setShowTagFilter] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({ tags: [], priorities: [] });
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -113,11 +113,16 @@ export default function App(): JSX.Element {
     return Array.from(tags).sort((a, b) => a.localeCompare(b));
   }, [tasks]);
 
+  const activeFilterCount = filters.tags.length + filters.priorities.length;
+
   const filteredTasks = useMemo(() => {
-    if (filterTags.length === 0) return tasks;
-    const tagSet = new Set(filterTags);
-    return tasks.filter((t) => tagSet.has(t.tag));
-  }, [tasks, filterTags]);
+    if (filters.tags.length === 0 && filters.priorities.length === 0) return tasks;
+    const tagSet = filters.tags.length > 0 ? new Set(filters.tags) : null;
+    const prioritySet = filters.priorities.length > 0 ? new Set(filters.priorities) : null;
+    return tasks.filter((t) =>
+      (!tagSet || tagSet.has(t.tag)) && (!prioritySet || prioritySet.has(t.priority))
+    );
+  }, [tasks, filters]);
 
   const groupedTasks = useMemo(() => groupTasks(filteredTasks), [filteredTasks]);
 
@@ -436,14 +441,19 @@ export default function App(): JSX.Element {
         <div className="filter-bar">
           <button
             type="button"
-            className={`filter-btn${filterTags.length > 0 ? ' filter-btn--active' : ''}`}
-            onClick={() => setShowTagFilter(true)}
+            className={`filter-btn${activeFilterCount > 0 ? ' filter-btn--active' : ''}`}
+            onClick={() => setShowFilterModal(true)}
           >
-            Filter{filterTags.length > 0 ? ` (${filterTags.length})` : ''}
+            Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </button>
-          {filterTags.length > 0 ? (
+          {activeFilterCount > 0 ? (
             <div className="filter-active-tags">
-              {filterTags.map((tag) => (
+              {filters.priorities.map((p) => (
+                <span key={p} className={`filter-active-chip priority-tag--${p.toLowerCase()}`}>
+                  {p[0] + p.slice(1).toLowerCase()}
+                </span>
+              ))}
+              {filters.tags.map((tag) => (
                 <span key={tag} className="filter-active-chip" style={tagColorStyle(tag)}>{tag}</span>
               ))}
             </div>
@@ -483,12 +493,12 @@ export default function App(): JSX.Element {
         onSave={saveTask}
       />
 
-      {showTagFilter ? (
+      {showFilterModal ? (
         <TagFilter
           availableTags={availableTags}
-          activeTags={filterTags}
-          onApply={(tags) => { setFilterTags(tags); setShowTagFilter(false); }}
-          onClose={() => setShowTagFilter(false)}
+          activeFilters={filters}
+          onApply={(f) => { setFilters(f); setShowFilterModal(false); }}
+          onClose={() => setShowFilterModal(false)}
         />
       ) : null}
     </div>
