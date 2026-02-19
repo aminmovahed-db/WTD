@@ -47,7 +47,7 @@ export function Column({
       <header>
         <h3>{title}</h3>
         <div className="column-stats">
-          {column !== 'DONE' ? (
+          {column !== 'DONE' && tasks.reduce((sum, t) => sum + t.effort, 0) > 0 ? (
             <span className="column-effort" title="Total effort">
               {'🏋️'}{tasks.reduce((sum, t) => sum + t.effort, 0)}
             </span>
