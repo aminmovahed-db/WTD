@@ -131,7 +131,9 @@ select {
   border: 1px solid var(--surface-border);
   border-radius: 14px;
   padding: 10px;
-  min-height: 65vh;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
   animation: reveal-column 280ms ease both;
@@ -147,6 +149,7 @@ select {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .kanban-column > header h3 {
@@ -167,6 +170,7 @@ select {
   display: flex;
   gap: 8px;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .quick-add-form input {
@@ -199,6 +203,27 @@ select {
   flex-direction: column;
   gap: 8px;
   min-height: 48px;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-border) transparent;
+}
+
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 3px;
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .task-card {
