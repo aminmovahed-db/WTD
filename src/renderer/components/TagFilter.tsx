@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { tagColorStyle } from '../utils/tagColors';
 
 interface TagFilterProps {
   availableTags: string[];
@@ -45,6 +46,7 @@ export function TagFilter({ availableTags, activeTags, onApply, onClose }: TagFi
                 key={tag}
                 type="button"
                 className={`tag-filter-chip${selected.has(tag) ? ' tag-filter-chip--active' : ''}`}
+                style={selected.has(tag) ? tagColorStyle(tag) : undefined}
                 onClick={() => toggleTag(tag)}
               >
                 {tag}

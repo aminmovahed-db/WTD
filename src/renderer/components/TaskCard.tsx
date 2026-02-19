@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { createPortal } from 'react-dom';
 import type { Task } from '../../shared/types';
 import { PriorityTag } from './PriorityTag';
+import { tagColorStyle } from '../utils/tagColors';
 
 interface TaskCardProps {
   task: Task;
@@ -114,7 +115,7 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
         {...attributes}
         {...listeners}
       >
-        {task.tag ? <span className="task-tag">{task.tag}</span> : null}
+        {task.tag ? <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span> : null}
         <button className="task-main" onClick={() => onEdit(task)} type="button">
           <PriorityTag priority={task.priority} />
           <div className="task-title-row">

@@ -22,6 +22,7 @@ import { TaskCardPreview } from './components/TaskCardPreview';
 import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
 import { COLUMNS, type Column, type ImportResult, type Priority, type Task } from '../shared/types';
+import { tagColorStyle } from './utils/tagColors';
 
 function groupTasks(tasks: Task[]): Record<Column, Task[]> {
   const grouped: Record<Column, Task[]> = {
@@ -443,7 +444,7 @@ export default function App(): JSX.Element {
           {filterTags.length > 0 ? (
             <div className="filter-active-tags">
               {filterTags.map((tag) => (
-                <span key={tag} className="filter-active-chip">{tag}</span>
+                <span key={tag} className="filter-active-chip" style={tagColorStyle(tag)}>{tag}</span>
               ))}
             </div>
           ) : null}
