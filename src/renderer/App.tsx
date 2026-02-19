@@ -139,7 +139,7 @@ export default function App(): JSX.Element {
     }
   }
 
-  async function saveTask(taskId: string, updates: { title?: string; notes?: string; priority?: Priority }): Promise<void> {
+  async function saveTask(taskId: string, updates: { title?: string; notes?: string; tag?: string; priority?: Priority }): Promise<void> {
     const updated = await window.kanbanApi.updateTask({ id: taskId, ...updates });
     setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   }

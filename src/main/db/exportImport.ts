@@ -75,9 +75,9 @@ export function importTasksFromJson(
 
     const insert = db.prepare(
       `INSERT INTO tasks (
-        id, title, notes, priority, column, position, created_at, updated_at, archived_at, completed_at
+        id, title, notes, tag, priority, column, position, created_at, updated_at, archived_at, completed_at
       ) VALUES (
-        @id, @title, @notes, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+        @id, @title, @notes, @tag, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
       )`
     );
 

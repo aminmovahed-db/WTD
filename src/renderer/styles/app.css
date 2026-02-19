@@ -228,6 +228,7 @@ select {
 }
 
 .task-card {
+  position: relative;
   border: 1px solid var(--surface-border);
   border-radius: 12px;
   background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
@@ -238,6 +239,25 @@ select {
   box-shadow: var(--shadow-sm);
   transition: box-shadow 140ms ease, border-color 140ms ease, transform 140ms ease;
   cursor: grab;
+}
+
+.task-tag {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  white-space: nowrap;
+  max-width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .task-card:hover {

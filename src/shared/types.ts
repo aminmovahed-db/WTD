@@ -8,6 +8,7 @@ export interface Task {
   id: string;
   title: string;
   notes: string;
+  tag: string;
   priority: Priority;
   column: Column;
   position: number;
@@ -20,6 +21,7 @@ export interface Task {
 export interface CreateTaskInput {
   title: string;
   notes?: string;
+  tag?: string;
   priority?: Priority;
   column?: Column;
 }
@@ -28,6 +30,7 @@ export interface UpdateTaskInput {
   id: string;
   title?: string;
   notes?: string;
+  tag?: string;
   priority?: Priority;
 }
 

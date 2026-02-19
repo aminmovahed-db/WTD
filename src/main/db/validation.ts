@@ -8,6 +8,7 @@ export const taskValidationSchema = z.object({
   id: z.string().uuid(),
   title: z.string().trim().min(1).max(200),
   notes: z.string().max(5000),
+  tag: z.string().max(50).default(''),
   priority: prioritySchema.default('LOW'),
   column: columnSchema,
   position: z.number().int().nonnegative(),
@@ -20,6 +21,7 @@ export const taskValidationSchema = z.object({
 export const createTaskInputSchema = z.object({
   title: z.string().trim().min(1).max(200),
   notes: z.string().max(5000).optional(),
+  tag: z.string().max(50).optional(),
   priority: prioritySchema.optional(),
   column: columnSchema.optional()
 });
@@ -29,9 +31,10 @@ export const updateTaskInputSchema = z
     id: z.string().uuid(),
     title: z.string().trim().min(1).max(200).optional(),
     notes: z.string().max(5000).optional(),
+    tag: z.string().max(50).optional(),
     priority: prioritySchema.optional()
   })
-  .refine((v) => v.title !== undefined || v.notes !== undefined || v.priority !== undefined, {
+  .refine((v) => v.title !== undefined || v.notes !== undefined || v.tag !== undefined || v.priority !== undefined, {
     message: 'At least one field must be provided'
   });
 
