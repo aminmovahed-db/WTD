@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, nativeImage } from 'electron';
 import type Database from 'better-sqlite3';
 import type { ArchiveTaskInput, CreateTaskInput, DeleteTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
 import { initDatabase } from '../src/main/db';
@@ -19,7 +19,8 @@ function createWindow(): void {
     height: 820,
     minWidth: 1024,
     minHeight: 700,
-    title: 'Daily Kanban',
+    title: 'WTD',
+    icon: path.join(app.isPackaged ? process.resourcesPath : process.cwd(), 'build', 'icon.png'),
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
@@ -72,8 +73,8 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
 
   ipcMain.handle('dialog:pickExportPath', async () => {
     const result = await dialog.showSaveDialog({
-      title: 'Export Kanban Data',
-      defaultPath: `daily-kanban-${new Date().toISOString().slice(0, 10)}.json`,
+      title: 'Export WTD Data',
+      defaultPath: `wtd-${new Date().toISOString().slice(0, 10)}.json`,
       filters: [{ name: 'JSON Files', extensions: ['json'] }]
     });
 
@@ -82,7 +83,7 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
 
   ipcMain.handle('dialog:pickImportPath', async () => {
     const result = await dialog.showOpenDialog({
-      title: 'Import Kanban Data',
+      title: 'Import WTD Data',
       properties: ['openFile'],
       filters: [{ name: 'JSON Files', extensions: ['json'] }]
     });
@@ -99,6 +100,11 @@ app.whenReady().then(() => {
   try {
     const db = initDatabase(app.getPath('userData'));
     const repo = new TaskRepository(db);
+
+    const iconPath = path.join(app.isPackaged ? process.resourcesPath : process.cwd(), 'build', 'icon.png');
+    if (process.platform === 'darwin') {
+      app.dock?.setIcon(nativeImage.createFromPath(iconPath));
+    }
 
     registerIpcHandlers(repo, db);
     createWindow();

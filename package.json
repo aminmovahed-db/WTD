@@ -1,7 +1,7 @@
 {
-  "name": "daily-kanban-desktop",
+  "name": "wtd-desktop",
   "version": "0.1.0",
-  "description": "Local-first daily kanban desktop app",
+  "description": "WTD - Local-first task board desktop app",
   "main": "dist-electron/electron/main.js",
   "author": "",
   "license": "MIT",
@@ -47,8 +47,8 @@
     "wait-on": "^8.0.3"
   },
   "build": {
-    "appId": "com.local.dailykanban",
-    "productName": "Daily Kanban",
+    "appId": "com.local.wtd",
+    "productName": "WTD",
     "directories": {
       "output": "release"
     },
@@ -62,7 +62,8 @@
       "target": [
         "dmg"
       ],
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns"
     }
   }
 }
