@@ -85,7 +85,7 @@ describe('TaskRepository lifecycle', () => {
   it('creates, updates, moves, archives, and restores', () => {
     const { db, repo } = createRepository();
     const task = repo.createTask({ title: 'Task 1', column: 'BACKLOG' });
-    expect(task.priority).toBe('LOW');
+    expect(task.priority).toBe('NONE');
 
     const updated = repo.updateTask({ id: task.id, notes: 'note', priority: 'HIGH' });
     expect(updated.notes).toBe('note');
