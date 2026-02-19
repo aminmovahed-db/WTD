@@ -17,6 +17,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { ArchiveView } from './components/ArchiveView';
 import { Board } from './components/Board';
+import { TagFilter } from './components/TagFilter';
 import { TaskCardPreview } from './components/TaskCardPreview';
 import { TaskEditor } from './components/TaskEditor';
 import { Toolbar } from './components/Toolbar';
@@ -100,9 +101,24 @@ export default function App(): JSX.Element {
   const [importSummary, setImportSummary] = useState<ImportResult | null>(null);
   const [draggingTask, setDraggingTask] = useState<Task | null>(null);
   const [dragSnapshot, setDragSnapshot] = useState<Task[] | null>(null);
+  const [filterTags, setFilterTags] = useState<string[]>([]);
+  const [showTagFilter, setShowTagFilter] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
-  const groupedTasks = useMemo(() => groupTasks(tasks), [tasks]);
+
+  const availableTags = useMemo(() => {
+    const tags = new Set<string>();
+    tasks.forEach((t) => { if (t.tag) tags.add(t.tag); });
+    return Array.from(tags).sort((a, b) => a.localeCompare(b));
+  }, [tasks]);
+
+  const filteredTasks = useMemo(() => {
+    if (filterTags.length === 0) return tasks;
+    const tagSet = new Set(filterTags);
+    return tasks.filter((t) => tagSet.has(t.tag));
+  }, [tasks, filterTags]);
+
+  const groupedTasks = useMemo(() => groupTasks(filteredTasks), [filteredTasks]);
 
   const dragSnapshotRef = useRef<Task[]>([]);
 
@@ -415,6 +431,25 @@ export default function App(): JSX.Element {
         </div>
       ) : null}
 
+      {!loading && !showArchive ? (
+        <div className="filter-bar">
+          <button
+            type="button"
+            className={`filter-btn${filterTags.length > 0 ? ' filter-btn--active' : ''}`}
+            onClick={() => setShowTagFilter(true)}
+          >
+            Filter{filterTags.length > 0 ? ` (${filterTags.length})` : ''}
+          </button>
+          {filterTags.length > 0 ? (
+            <div className="filter-active-tags">
+              {filterTags.map((tag) => (
+                <span key={tag} className="filter-active-chip">{tag}</span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       {loading ? (
         <p className="loading">Loading...</p>
       ) : showArchive ? (
@@ -446,6 +481,15 @@ export default function App(): JSX.Element {
         onClose={() => setSelectedTask(null)}
         onSave={saveTask}
       />
+
+      {showTagFilter ? (
+        <TagFilter
+          availableTags={availableTags}
+          activeTags={filterTags}
+          onApply={(tags) => { setFilterTags(tags); setShowTagFilter(false); }}
+          onClose={() => setShowTagFilter(false)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -120,6 +120,123 @@ select {
   color: var(--text-muted);
 }
 
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.filter-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.filter-btn--active {
+  background: var(--accent-strong);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.filter-active-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-active-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.tag-filter-modal {
+  width: min(440px, 100%);
+}
+
+.tag-filter-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.tag-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.tag-filter-chip {
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.tag-filter-chip:hover {
+  border-color: var(--accent);
+}
+
+.tag-filter-chip--active {
+  background: var(--accent-strong);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.tag-filter-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.tag-filter-actions button {
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 7px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.tag-filter-actions button:hover {
+  border-color: var(--accent);
+}
+
+.tag-filter-clear {
+  margin-right: auto;
+}
+
+.tag-filter-apply {
+  background: var(--accent-strong) !important;
+  color: #fff !important;
+  border-color: var(--accent-strong) !important;
+}
+
 .board-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(240px, 1fr));
