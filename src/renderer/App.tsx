@@ -362,12 +362,26 @@ export default function App(): JSX.Element {
       } else {
         const targetGrouped = groupTasks(latestTasks);
         const targetList = targetGrouped[targetColumn];
-        const toPosition = targetList.findIndex((task) => task.id === activeId);
+        const currentIndex = targetList.findIndex((t) => t.id === activeId);
+
+        let toPosition: number;
+
+        if (overId !== activeId && !overId.startsWith('column:')) {
+          const overIndex = targetList.findIndex((t) => t.id === overId);
+          if (currentIndex >= 0 && overIndex >= 0) {
+            const reordered = arrayMove(targetList, currentIndex, overIndex);
+            toPosition = reordered.findIndex((t) => t.id === activeId);
+          } else {
+            toPosition = currentIndex >= 0 ? currentIndex : targetList.length;
+          }
+        } else {
+          toPosition = currentIndex >= 0 ? currentIndex : targetList.length;
+        }
 
         await window.kanbanApi.moveTask({
           id: activeId,
           toColumn: targetColumn,
-          toPosition: toPosition >= 0 ? toPosition : targetList.length
+          toPosition
         });
       }
 
