@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import {
   DndContext,
   DragOverlay,
   PointerSensor,
   closestCorners,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragOverEvent,
   type DragCancelEvent,
   type DragEndEvent,
@@ -48,6 +51,45 @@ function getColumnByOverId(overId: string, tasks: Task[]): Column | null {
   return overTask?.column ?? null;
 }
 
+// closestCorners works well when every column has cards — it finds the
+// nearest task card for precise reorder positioning. But when a column
+// is empty, its large section rect has corners far from the pointer, so
+// closestCorners picks a task card from an adjacent column instead and
+// the empty column is never detected as a drop target.
+//
+// This strategy uses pointerWithin to detect which column the pointer is
+// physically inside, then checks whether closestCorners agrees. When they
+// disagree (pointer over an empty column, closestCorners chose a card in
+// a neighbour), we override with the column droppable.
+const multiContainerCollision: CollisionDetection = (args) => {
+  const cornerCollisions = closestCorners(args);
+  const pointerCollisions = pointerWithin(args);
+
+  const pointerColumn = pointerCollisions.find((c) =>
+    String(c.id).startsWith('column:')
+  );
+
+  if (pointerColumn && cornerCollisions.length > 0) {
+    const topId = String(cornerCollisions[0].id);
+    if (topId === String(pointerColumn.id)) {
+      return cornerCollisions;
+    }
+
+    const pointerColumnName = String(pointerColumn.id).split(':')[1];
+    const topData = cornerCollisions[0].data?.droppableContainer?.data?.current;
+    const topResultColumn: string | undefined =
+      topData?.task?.column ?? topData?.column;
+
+    if (topResultColumn === pointerColumnName) {
+      return cornerCollisions;
+    }
+
+    return [pointerColumn, ...cornerCollisions];
+  }
+
+  return cornerCollisions.length > 0 ? cornerCollisions : pointerCollisions;
+};
+
 export default function App(): JSX.Element {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [archivedTasks, setArchivedTasks] = useState<Task[]>([]);
@@ -61,6 +103,8 @@ export default function App(): JSX.Element {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const groupedTasks = useMemo(() => groupTasks(tasks), [tasks]);
+
+  const dragSnapshotRef = useRef<Task[]>([]);
 
   async function loadAll(): Promise<void> {
     setLoading(true);
@@ -168,6 +212,7 @@ export default function App(): JSX.Element {
     const task = event.active.data.current?.task as Task | undefined;
     setDraggingTask(task ?? null);
     setDragSnapshot(tasks);
+    dragSnapshotRef.current = tasks;
   }
 
   function handleDragCancel(_event: DragCancelEvent): void {
@@ -259,36 +304,35 @@ export default function App(): JSX.Element {
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    const startTasks = dragSnapshot ?? tasks;
-    const startTask = startTasks.find((task) => task.id === activeId);
-    const finalTask = tasks.find((task) => task.id === activeId);
-    if (!startTask || !finalTask) {
-      setDraggingTask(null);
-      setDragSnapshot(null);
-      return;
-    }
+    // Force React to synchronously process any pending setTasks from
+    // handleDragOver. The functional updater is guaranteed to receive
+    // the state after all queued updates have been applied, so
+    // latestTasks reflects the optimistic column change even when the
+    // closure's `tasks` is stale.
+    let latestTasks = tasks;
+    flushSync(() => {
+      setTasks((prev) => {
+        latestTasks = prev;
+        return prev;
+      });
+    });
 
-    const targetColumn = getColumnByOverId(overId, tasks);
-    if (!targetColumn) {
+    const startTasks = dragSnapshotRef.current;
+    const startTask = startTasks.find((task) => task.id === activeId);
+    const currentTask = latestTasks.find((task) => task.id === activeId);
+    if (!startTask || !currentTask) {
       setDraggingTask(null);
       setDragSnapshot(null);
       return;
     }
 
     const sourceColumn = startTask.column;
-    const finalColumn = finalTask.column;
-    const targetList = groupedTasks[finalColumn];
-
-    let targetIndex = targetList.findIndex((task) => task.id === overId);
-    if (targetIndex < 0) {
-      targetIndex = targetList.length;
-    }
-
-    const snapshot = dragSnapshot ?? tasks;
+    const targetColumn = currentTask.column;
 
     try {
-      if (sourceColumn === finalColumn) {
-        const sourceList = groupedTasks[sourceColumn];
+      if (sourceColumn === targetColumn) {
+        const grouped = groupTasks(startTasks);
+        const sourceList = grouped[sourceColumn];
         const sourceIndex = sourceList.findIndex((task) => task.id === activeId);
         if (sourceIndex === -1) {
           setDraggingTask(null);
@@ -298,7 +342,7 @@ export default function App(): JSX.Element {
 
         const ids = sourceList.map((task) => task.id);
         const overIndex = ids.indexOf(overId);
-        const finalTargetIndex = overIndex >= 0 ? overIndex : targetIndex;
+        const finalTargetIndex = overIndex >= 0 ? overIndex : sourceList.length;
         const reordered = arrayMove(sourceList, sourceIndex, finalTargetIndex).map((task, idx) => ({
           ...task,
           position: idx
@@ -316,10 +360,13 @@ export default function App(): JSX.Element {
           orderedIds: reordered.map((task) => task.id)
         });
       } else {
+        const targetGrouped = groupTasks(latestTasks);
+        const targetList = targetGrouped[targetColumn];
         const toPosition = targetList.findIndex((task) => task.id === activeId);
+
         await window.kanbanApi.moveTask({
           id: activeId,
-          toColumn: finalColumn,
+          toColumn: targetColumn,
           toPosition: toPosition >= 0 ? toPosition : targetList.length
         });
       }
@@ -327,7 +374,7 @@ export default function App(): JSX.Element {
       setError(null);
       await loadAll();
     } catch (err) {
-      setTasks(snapshot);
+      setTasks(startTasks);
       setError(err instanceof Error ? err.message : 'Failed to move task');
     } finally {
       setDraggingTask(null);
@@ -361,7 +408,7 @@ export default function App(): JSX.Element {
       ) : (
         <DndContext
           sensors={sensors}
-          collisionDetection={closestCorners}
+          collisionDetection={multiContainerCollision}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragCancel={handleDragCancel}
