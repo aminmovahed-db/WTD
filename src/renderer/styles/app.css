@@ -411,13 +411,15 @@ select {
   font-size: 15px;
 }
 
+.task-priority-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .notes-indicator {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--accent);
-  opacity: 0.55;
+  font-size: 12px;
+  line-height: 1;
 }
 
 .task-card--expanded {

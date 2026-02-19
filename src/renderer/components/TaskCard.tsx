@@ -117,10 +117,12 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
       >
         {task.tag ? <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span> : null}
         <button className="task-main" onClick={() => onEdit(task)} type="button">
-          <PriorityTag priority={task.priority} />
+          <div className="task-priority-row">
+            <PriorityTag priority={task.priority} />
+            {task.notes ? <span className="notes-indicator" title="Has notes" aria-label="Has notes">ℹ️</span> : null}
+          </div>
           <div className="task-title-row">
             <h4>{task.title}</h4>
-            {task.notes ? <span className="notes-indicator" title="Has notes" aria-label="Has notes" /> : null}
           </div>
         </button>
       </article>
