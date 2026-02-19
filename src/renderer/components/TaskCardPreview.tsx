@@ -11,7 +11,6 @@ export function TaskCardPreview({ task }: TaskCardPreviewProps): JSX.Element {
       <div className="task-main">
         <PriorityTag priority={task.priority} />
         <h4>{task.title}</h4>
-        {task.notes ? <p>{task.notes}</p> : null}
       </div>
       {task.column === 'DONE' ? <div className="task-archive">Archive</div> : null}
     </article>

@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
-import type { Task } from '../../shared/types';
+import type { Priority, Task } from '../../shared/types';
 import { PriorityTag } from './PriorityTag';
 
 interface TaskCardProps {
@@ -10,6 +10,7 @@ interface TaskCardProps {
   onEdit: (task: Task) => void;
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
+  onSaveTask: (taskId: string, updates: { title?: string; notes?: string; priority?: Priority }) => Promise<void>;
 }
 
 interface ContextMenuState {
@@ -18,15 +19,22 @@ interface ContextMenuState {
   y: number;
 }
 
-export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): JSX.Element {
+export function TaskCard({ task, onEdit, onArchive, onDelete, onSaveTask }: TaskCardProps): JSX.Element {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: { task }
   });
 
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({ visible: false, x: 0, y: 0 });
+  const [expanded, setExpanded] = useState(false);
+  const [localNotes, setLocalNotes] = useState(task.notes);
   const cardRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setLocalNotes(task.notes);
+  }, [task.notes]);
 
   // Combine dnd-kit ref with our own ref
   const setRefs = useCallback(
@@ -99,6 +107,25 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
     onDelete(task.id);
   }
 
+  async function handleNotesBlur(): Promise<void> {
+    if (localNotes === task.notes) return;
+    try {
+      await onSaveTask(task.id, { notes: localNotes });
+    } catch {
+      setLocalNotes(task.notes);
+    }
+  }
+
+  function handleToggleExpand(): void {
+    setExpanded((prev) => !prev);
+  }
+
+  useEffect(() => {
+    if (expanded && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [expanded]);
+
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -110,16 +137,41 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
       <article
         ref={setRefs}
         style={style}
-        className="task-card"
+        className={`task-card${expanded ? ' task-card--expanded' : ''}`}
         data-dragging={isDragging || undefined}
         {...attributes}
         {...listeners}
       >
-        <button className="task-main" onClick={() => onEdit(task)} type="button">
+        <button className="task-main" onClick={handleToggleExpand} type="button">
           <PriorityTag priority={task.priority} />
-          <h4>{task.title}</h4>
-          {task.notes ? <p>{task.notes}</p> : null}
+          <div className="task-title-row">
+            <h4>{task.title}</h4>
+            {!expanded && task.notes ? <span className="notes-indicator" title="Has notes" aria-label="Has notes" /> : null}
+          </div>
         </button>
+        {expanded ? (
+          <div className="task-expanded" onPointerDown={(e) => e.stopPropagation()}>
+            <textarea
+              ref={textareaRef}
+              className="task-notes-editor"
+              value={localNotes}
+              onChange={(e) => setLocalNotes(e.target.value)}
+              onBlur={handleNotesBlur}
+              placeholder="Add notes..."
+              maxLength={5000}
+              rows={3}
+            />
+            <div className="task-expanded-actions">
+              <button
+                type="button"
+                className="edit-details-btn"
+                onClick={() => onEdit(task)}
+              >
+                Edit details
+              </button>
+            </div>
+          </div>
+        ) : null}
       </article>
 
       {contextMenu.visible

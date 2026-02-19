@@ -434,6 +434,7 @@ export default function App(): JSX.Element {
             onEditTask={setSelectedTask}
             onArchiveTask={archiveTask}
             onDeleteTask={deleteTask}
+            onSaveTask={saveTask}
           />
           <DragOverlay>
             {draggingTask ? <TaskCardPreview task={draggingTask} /> : null}

@@ -1,4 +1,4 @@
-import type { Column as ColumnType, Task } from '../../shared/types';
+import type { Column as ColumnType, Priority, Task } from '../../shared/types';
 import { Column } from './Column';
 
 const COLUMN_TITLES: Record<ColumnType, string> = {
@@ -14,9 +14,10 @@ interface BoardProps {
   onEditTask: (task: Task) => void;
   onArchiveTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onSaveTask: (taskId: string, updates: { title?: string; notes?: string; priority?: Priority }) => Promise<void>;
 }
 
-export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask, onDeleteTask }: BoardProps): JSX.Element {
+export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask, onDeleteTask, onSaveTask }: BoardProps): JSX.Element {
   return (
     <main className="board-grid">
       {(Object.keys(COLUMN_TITLES) as ColumnType[]).map((column) => (
@@ -29,6 +30,7 @@ export function Board({ groupedTasks, onCreateTask, onEditTask, onArchiveTask, o
           onEditTask={onEditTask}
           onArchiveTask={onArchiveTask}
           onDeleteTask={onDeleteTask}
+          onSaveTask={onSaveTask}
         />
       ))}
     </main>

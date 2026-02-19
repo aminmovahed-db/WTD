@@ -267,9 +267,92 @@ select {
   gap: 6px;
 }
 
+.task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .task-main h4 {
   margin: 0;
   font-size: 15px;
+}
+
+.notes-indicator {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+.task-card--expanded {
+  border-color: var(--accent);
+}
+
+.task-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: expand-in 160ms ease;
+}
+
+.task-notes-editor {
+  width: 100%;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  color: var(--text);
+  padding: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  resize: vertical;
+  min-height: 52px;
+  white-space: pre-wrap;
+}
+
+.task-notes-editor:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 0;
+}
+
+.task-notes-editor::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.task-expanded-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-details-btn {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 100ms ease;
+}
+
+.edit-details-btn:hover {
+  background: var(--accent-soft);
+}
+
+@keyframes expand-in {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 300px;
+  }
 }
 
 .task-main p {
