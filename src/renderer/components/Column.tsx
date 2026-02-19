@@ -1,7 +1,7 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import type { FormEvent } from 'react';
-import type { Column as ColumnType, Priority, Task } from '../../shared/types';
+import type { Column as ColumnType, Task } from '../../shared/types';
 import { TaskCard } from './TaskCard';
 
 interface ColumnProps {
@@ -12,7 +12,6 @@ interface ColumnProps {
   onEditTask: (task: Task) => void;
   onArchiveTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
-  onSaveTask: (taskId: string, updates: { title?: string; notes?: string; priority?: Priority }) => Promise<void>;
 }
 
 export function Column({
@@ -22,8 +21,7 @@ export function Column({
   onCreateTask,
   onEditTask,
   onArchiveTask,
-  onDeleteTask,
-  onSaveTask
+  onDeleteTask
 }: ColumnProps): JSX.Element {
   const { setNodeRef, isOver } = useDroppable({
     id: `column:${column}`,
@@ -57,7 +55,7 @@ export function Column({
       <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
         <div className="task-list">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onEdit={onEditTask} onArchive={onArchiveTask} onDelete={onDeleteTask} onSaveTask={onSaveTask} />
+            <TaskCard key={task.id} task={task} onEdit={onEditTask} onArchive={onArchiveTask} onDelete={onDeleteTask} />
           ))}
         </div>
       </SortableContext>
