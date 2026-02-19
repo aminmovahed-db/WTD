@@ -46,7 +46,14 @@ export function Column({
     <section className="kanban-column" ref={setNodeRef} data-over={isOver || undefined}>
       <header>
         <h3>{title}</h3>
-        <span>{tasks.length}</span>
+        <div className="column-stats">
+          {column !== 'DONE' ? (
+            <span className="column-effort" title="Total effort">
+              {'🏋️'}{tasks.reduce((sum, t) => sum + t.effort, 0)}
+            </span>
+          ) : null}
+          <span>{tasks.length}</span>
+        </div>
       </header>
       <form onSubmit={handleSubmit} className="quick-add-form">
         <input name="task-title" placeholder="Add task" maxLength={200} />

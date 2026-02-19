@@ -125,6 +125,7 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
             <h4>{task.title}</h4>
           </div>
         </button>
+        {task.effort > 0 ? <span className="task-effort" title={`Effort: ${task.effort}`}>{task.effort}</span> : null}
       </article>
 
       {contextMenu.visible

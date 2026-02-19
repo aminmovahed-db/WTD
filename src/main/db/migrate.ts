@@ -1,6 +1,6 @@
 import type Database from 'better-sqlite3';
 
-const LATEST_SCHEMA_VERSION = 3;
+const LATEST_SCHEMA_VERSION = 4;
 const INITIAL_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS meta (
   key TEXT PRIMARY KEY,
@@ -55,6 +55,10 @@ export function runMigrations(db: Database.Database): void {
 
   if (currentVersion < 3) {
     db.exec(`ALTER TABLE tasks ADD COLUMN tag TEXT NOT NULL DEFAULT ''`);
+  }
+
+  if (currentVersion < 4) {
+    db.exec(`ALTER TABLE tasks ADD COLUMN effort INTEGER NOT NULL DEFAULT 0`);
   }
 
   db.prepare(

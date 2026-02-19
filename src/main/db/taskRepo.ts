@@ -4,6 +4,7 @@ import {
   COLUMNS,
   type Column,
   type CreateTaskInput,
+  type Effort,
   type ReorderColumnInput,
   type Task,
   type UpdateTaskInput
@@ -53,6 +54,7 @@ export class TaskRepository {
       title: normalizeTitle(parsed.title),
       notes: parsed.notes ?? '',
       tag: parsed.tag ?? '',
+      effort: (parsed.effort ?? 0) as Effort,
       priority: parsed.priority ?? 'LOW',
       column,
       position,
@@ -65,9 +67,9 @@ export class TaskRepository {
     this.db
       .prepare(
         `INSERT INTO tasks (
-          id, title, notes, tag, priority, column, position, created_at, updated_at, archived_at, completed_at
+          id, title, notes, tag, effort, priority, column, position, created_at, updated_at, archived_at, completed_at
         ) VALUES (
-          @id, @title, @notes, @tag, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+          @id, @title, @notes, @tag, @effort, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
         )`
       )
       .run(task);
@@ -84,6 +86,7 @@ export class TaskRepository {
       title: parsed.title !== undefined ? normalizeTitle(parsed.title) : existing.title,
       notes: parsed.notes !== undefined ? parsed.notes : existing.notes,
       tag: parsed.tag !== undefined ? parsed.tag : existing.tag,
+      effort: (parsed.effort !== undefined ? parsed.effort : existing.effort) as Effort,
       priority: parsed.priority !== undefined ? parsed.priority : existing.priority,
       updated_at: new Date().toISOString()
     };
@@ -94,6 +97,7 @@ export class TaskRepository {
          SET title = @title,
              notes = @notes,
              tag = @tag,
+             effort = @effort,
              priority = @priority,
              updated_at = @updated_at
          WHERE id = @id`

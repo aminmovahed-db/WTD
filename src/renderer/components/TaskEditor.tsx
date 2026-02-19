@@ -1,16 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { PRIORITIES, type Priority, type Task } from '../../shared/types';
+import { EFFORTS, PRIORITIES, type Effort, type Priority, type Task } from '../../shared/types';
 
 interface TaskEditorProps {
   task: Task | null;
   onClose: () => void;
-  onSave: (taskId: string, updates: { title?: string; notes?: string; tag?: string; priority?: Priority }) => Promise<void>;
+  onSave: (taskId: string, updates: { title?: string; notes?: string; tag?: string; effort?: Effort; priority?: Priority }) => Promise<void>;
 }
 
 export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Element | null {
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [tag, setTag] = useState('');
+  const [effort, setEffort] = useState<Effort>(0);
   const [priority, setPriority] = useState<Priority>('LOW');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
     setTitle(task.title);
     setNotes(task.notes);
     setTag(task.tag);
+    setEffort(task.effort);
     setPriority(task.priority);
     setError(null);
   }, [task]);
@@ -43,7 +45,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
 
     setSaving(true);
     try {
-      await onSave(task.id, { title: trimmed, notes, tag: tag.trim(), priority });
+      await onSave(task.id, { title: trimmed, notes, tag: tag.trim(), effort, priority });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task');
@@ -70,6 +72,16 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
           <label>
             Tag
             <input value={tag} onChange={(event) => setTag(event.target.value)} maxLength={50} placeholder="e.g. bug, feature, urgent" />
+          </label>
+          <label>
+            Effort
+            <select value={effort} onChange={(event) => setEffort(Number(event.target.value) as Effort)}>
+              {EFFORTS.map((val) => (
+                <option key={val} value={val}>
+                  {val === 0 ? 'None' : val}
+                </option>
+              ))}
+            </select>
           </label>
           <label>
             Priority

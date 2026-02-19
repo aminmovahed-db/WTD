@@ -270,7 +270,13 @@ select {
   margin: 0;
 }
 
-.kanban-column > header span {
+.column-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.column-stats > span {
   min-width: 28px;
   text-align: center;
   border-radius: 999px;
@@ -278,6 +284,11 @@ select {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 700;
+}
+
+.column-effort {
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .quick-add-form {
@@ -369,6 +380,19 @@ select {
   max-width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.task-effort {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
   pointer-events: none;
 }
 

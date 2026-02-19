@@ -1,5 +1,7 @@
 export const COLUMNS = ['BACKLOG', 'TODAY', 'DOING', 'DONE'] as const;
 export const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH'] as const;
+export const EFFORTS = [0, 1, 2, 3, 5] as const;
+export type Effort = (typeof EFFORTS)[number];
 
 export type Column = (typeof COLUMNS)[number];
 export type Priority = (typeof PRIORITIES)[number];
@@ -9,6 +11,7 @@ export interface Task {
   title: string;
   notes: string;
   tag: string;
+  effort: Effort;
   priority: Priority;
   column: Column;
   position: number;
@@ -31,6 +34,7 @@ export interface UpdateTaskInput {
   title?: string;
   notes?: string;
   tag?: string;
+  effort?: Effort;
   priority?: Priority;
 }
 

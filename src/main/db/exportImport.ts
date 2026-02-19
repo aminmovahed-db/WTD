@@ -33,7 +33,7 @@ function parsePayload(raw: string): ExportPayload {
       throw new Error(`Invalid column at index ${idx}`);
     }
 
-    return result.data;
+    return result.data as Task;
   });
 
   return {
@@ -75,9 +75,9 @@ export function importTasksFromJson(
 
     const insert = db.prepare(
       `INSERT INTO tasks (
-        id, title, notes, tag, priority, column, position, created_at, updated_at, archived_at, completed_at
+        id, title, notes, tag, effort, priority, column, position, created_at, updated_at, archived_at, completed_at
       ) VALUES (
-        @id, @title, @notes, @tag, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
+        @id, @title, @notes, @tag, @effort, @priority, @column, @position, @created_at, @updated_at, @archived_at, @completed_at
       )`
     );
 
