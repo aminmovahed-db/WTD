@@ -12,7 +12,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
   const [notes, setNotes] = useState('');
   const [tag, setTag] = useState('');
   const [effort, setEffort] = useState<Effort>(0);
-  const [priority, setPriority] = useState<Priority>('LOW');
+  const [priority, setPriority] = useState<Priority>('NONE');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

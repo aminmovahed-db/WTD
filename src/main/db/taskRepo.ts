@@ -55,7 +55,7 @@ export class TaskRepository {
       notes: parsed.notes ?? '',
       tag: parsed.tag ?? '',
       effort: (parsed.effort ?? 0) as Effort,
-      priority: parsed.priority ?? 'LOW',
+      priority: parsed.priority ?? 'NONE',
       column,
       position,
       created_at: now,

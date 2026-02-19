@@ -1,5 +1,5 @@
 export const COLUMNS = ['BACKLOG', 'TODAY', 'DOING', 'DONE'] as const;
-export const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH'] as const;
+export const PRIORITIES = ['NONE', 'LOW', 'MEDIUM', 'HIGH'] as const;
 export const EFFORTS = [0, 1, 2, 3, 5] as const;
 export type Effort = (typeof EFFORTS)[number];
 

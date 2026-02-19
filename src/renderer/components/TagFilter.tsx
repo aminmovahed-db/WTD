@@ -3,6 +3,7 @@ import { PRIORITIES, type Priority } from '../../shared/types';
 import { tagColorStyle } from '../utils/tagColors';
 
 const PRIORITY_LABELS: Record<Priority, string> = {
+  NONE: 'None',
   LOW: '🔥 Low',
   MEDIUM: '🔥🔥 Medium',
   HIGH: '🔥🔥🔥 High'

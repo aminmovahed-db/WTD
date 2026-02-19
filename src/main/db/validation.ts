@@ -11,7 +11,7 @@ export const taskValidationSchema = z.object({
   notes: z.string().max(5000),
   tag: z.string().max(50).default(''),
   effort: effortSchema.default(0),
-  priority: prioritySchema.default('LOW'),
+  priority: prioritySchema.default('NONE'),
   column: columnSchema,
   position: z.number().int().nonnegative(),
   created_at: z.string(),

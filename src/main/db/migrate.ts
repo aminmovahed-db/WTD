@@ -1,6 +1,6 @@
 import type Database from 'better-sqlite3';
 
-const LATEST_SCHEMA_VERSION = 4;
+const LATEST_SCHEMA_VERSION = 5;
 const INITIAL_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS meta (
   key TEXT PRIMARY KEY,
@@ -59,6 +59,31 @@ export function runMigrations(db: Database.Database): void {
 
   if (currentVersion < 4) {
     db.exec(`ALTER TABLE tasks ADD COLUMN effort INTEGER NOT NULL DEFAULT 0`);
+  }
+
+  if (currentVersion < 5) {
+    db.exec(`
+      CREATE TABLE tasks_new (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        notes TEXT NOT NULL DEFAULT '',
+        tag TEXT NOT NULL DEFAULT '',
+        effort INTEGER NOT NULL DEFAULT 0,
+        priority TEXT NOT NULL DEFAULT 'NONE'
+          CHECK (priority IN ('NONE', 'LOW', 'MEDIUM', 'HIGH')),
+        column TEXT NOT NULL CHECK (column IN ('BACKLOG', 'TODAY', 'DOING', 'DONE')),
+        position INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        archived_at TEXT,
+        completed_at TEXT
+      );
+      INSERT INTO tasks_new SELECT id, title, notes, tag, effort, priority, column, position, created_at, updated_at, archived_at, completed_at FROM tasks;
+      DROP TABLE tasks;
+      ALTER TABLE tasks_new RENAME TO tasks;
+      CREATE INDEX IF NOT EXISTS idx_tasks_column_position ON tasks(column, position) WHERE archived_at IS NULL;
+      CREATE INDEX IF NOT EXISTS idx_tasks_archived_at ON tasks(archived_at) WHERE archived_at IS NOT NULL;
+    `);
   }
 
   db.prepare(
