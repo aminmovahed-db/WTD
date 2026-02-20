@@ -379,7 +379,7 @@ select {
   position: relative;
   border: 1px solid var(--surface-border);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  background: rgba(28, 48, 72, 0.88);
   padding: 8px;
   display: flex;
   flex-direction: column;
