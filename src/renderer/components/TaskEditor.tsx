@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { EFFORTS, PRIORITIES, type Effort, type Priority, type Task } from '../../shared/types';
 
 interface TaskEditorProps {
@@ -15,6 +15,30 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
   const [priority, setPriority] = useState<Priority>('NONE');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleNotesKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== ' ') return;
+
+    const ta = e.currentTarget;
+    const { selectionStart, value } = ta;
+    const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+    const textBeforeCursor = value.slice(lineStart, selectionStart);
+
+    if (textBeforeCursor !== '*') return;
+
+    e.preventDefault();
+    const before = value.slice(0, lineStart);
+    const after = value.slice(selectionStart);
+    const updated = `${before}• ${after}`;
+    setNotes(updated);
+
+    requestAnimationFrame(() => {
+      const cursor = lineStart + 2;
+      ta.selectionStart = cursor;
+      ta.selectionEnd = cursor;
+    });
+  }, []);
 
   useEffect(() => {
     if (!task) {
@@ -67,7 +91,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
           </label>
           <label>
             Notes
-            <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={5000} rows={8} />
+            <textarea ref={notesRef} value={notes} onChange={(event) => setNotes(event.target.value)} onKeyDown={handleNotesKeyDown} maxLength={5000} rows={8} />
           </label>
           <label>
             Tag
