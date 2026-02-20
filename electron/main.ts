@@ -17,7 +17,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1320,
     height: 820,
-    minWidth: 1024,
+    minWidth: 1100,
     minHeight: 700,
     title: 'WTD',
     icon: path.join(app.isPackaged ? process.resourcesPath : process.cwd(), 'build', 'icon.png'),
