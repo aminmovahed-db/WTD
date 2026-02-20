@@ -265,8 +265,10 @@ select {
   border-radius: 14px;
   padding: 10px;
   min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
   animation: reveal-column 280ms ease both;
@@ -319,6 +321,7 @@ select {
 
 .quick-add-form input {
   flex: 1;
+  min-width: 0;
   border-radius: 10px;
   border: 1px solid var(--surface-border);
   background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
@@ -335,6 +338,7 @@ select {
 }
 
 .quick-add-form button {
+  flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid var(--accent-strong);
   background: var(--accent-strong);
