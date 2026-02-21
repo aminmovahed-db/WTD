@@ -74,6 +74,22 @@ select {
   z-index: 1;
 }
 
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.toolbar-icon {
+  height: 54px;
+  width: 54px;
+  border-radius: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -82,15 +98,16 @@ select {
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: 16px;
-  margin-bottom: 14px;
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .view-switch,
 .toolbar-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
