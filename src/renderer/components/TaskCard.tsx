@@ -115,7 +115,6 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
         {...attributes}
         {...listeners}
       >
-        {task.tag ? <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span> : null}
         <button className="task-main" onClick={() => onEdit(task)} type="button">
           <div className="task-priority-row">
             <PriorityTag priority={task.priority} />
@@ -123,6 +122,7 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
           </div>
           <div className="task-title-row">
             <h4>{task.title}</h4>
+            {task.tag ? <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span> : null}
           </div>
         </button>
         {task.effort > 0 ? <span className="task-effort" title={`Effort: ${task.effort}`}>{task.effort}</span> : null}

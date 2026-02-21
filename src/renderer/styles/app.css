@@ -390,9 +390,7 @@ select {
 }
 
 .task-tag {
-  position: absolute;
-  top: 6px;
-  right: 8px;
+  flex-shrink: 0;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -449,13 +447,16 @@ select {
 
 .task-title-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
 }
 
 .task-main h4 {
   margin: 0;
   font-size: 15px;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
 }
 
 .task-priority-row {
