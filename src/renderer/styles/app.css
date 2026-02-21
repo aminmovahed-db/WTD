@@ -83,8 +83,8 @@ select {
 }
 
 .toolbar-icon {
-  height: 67px;
-  width: 67px;
+  height: 67.5px;
+  width: 67.5px;
   border-radius: 10px;
   object-fit: contain;
   flex-shrink: 0;
