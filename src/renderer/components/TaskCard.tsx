@@ -118,7 +118,7 @@ export function TaskCard({ task, onEdit, onArchive, onDelete }: TaskCardProps): 
         <button className="task-main" onClick={() => onEdit(task)} type="button">
           <div className="task-priority-row">
             <PriorityTag priority={task.priority} />
-            {task.notes ? <span className="notes-indicator" title="Has notes" aria-label="Has notes">ℹ️</span> : null}
+            {task.notes ? <span className="notes-indicator" title="Has notes" aria-label="Has notes">📄</span> : null}
           </div>
           <div className="task-title-row">
             <h4>{task.title}</h4>
