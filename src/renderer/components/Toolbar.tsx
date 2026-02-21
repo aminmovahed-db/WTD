@@ -17,7 +17,7 @@ export function Toolbar({
 }: ToolbarProps): JSX.Element {
   return (
     <div className="toolbar-row">
-      <img src="/icon.png" alt="WTD" className="toolbar-icon" />
+      <img src="./icon.png" alt="WTD" className="toolbar-icon" />
       <header className="toolbar">
         <div className="view-switch">
           <button type="button" onClick={() => onToggleView(false)} data-active={!showingArchive || undefined}>
