@@ -237,12 +237,15 @@ describe('TaskRepository - update task', () => {
     db.close();
   });
 
-  it('updates updated_at timestamp', () => {
+  it('updates updated_at timestamp', async () => {
     const { db, repo } = createRepository();
     const task = repo.createTask({ title: 'Task' });
+
+    await new Promise((r) => setTimeout(r, 10));
     const updated = repo.updateTask({ id: task.id, notes: 'changed' });
 
     expect(updated.updated_at).not.toBe(task.updated_at);
+    expect(new Date(updated.updated_at).getTime()).toBeGreaterThan(new Date(task.updated_at).getTime());
 
     db.close();
   });
