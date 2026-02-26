@@ -60,7 +60,7 @@ Most task managers live in the cloud, sync across devices, and demand accounts. 
 ### Install
 
 ```bash
-git clone https://github.com/<your-username>/WTD.git
+git clone https://github.com/aminmovahed-db/WTD.git
 cd WTD
 npm install
 ```
