@@ -666,6 +666,38 @@ select {
   white-space: pre-wrap;
 }
 
+.notes-preview {
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  color: var(--text);
+  padding: 8px;
+  min-height: 170px;
+  font-size: inherit;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: text;
+}
+
+.notes-preview:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.linkified {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: color 120ms ease, border-color 120ms ease;
+  cursor: pointer;
+  word-break: break-all;
+}
+
+.linkified:hover {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
 .archive-actions {
   display: flex;
   gap: 8px;

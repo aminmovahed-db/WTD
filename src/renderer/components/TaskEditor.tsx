@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { EFFORTS, PRIORITIES, type Effort, type Priority, type Task } from '../../shared/types';
+import { LinkifiedText } from './LinkifiedText';
+
+const URL_PRESENT = /https?:\/\//;
 
 interface TaskEditorProps {
   task: Task | null;
@@ -15,6 +18,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
   const [priority, setPriority] = useState<Priority>('NONE');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingNotes, setEditingNotes] = useState(false);
   const notesRef = useRef<HTMLTextAreaElement>(null);
 
   const handleNotesKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -40,6 +44,17 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
     });
   }, []);
 
+  const showNotesPreview = !editingNotes && notes.length > 0 && URL_PRESENT.test(notes);
+
+  const handleNotesPreviewClick = useCallback(() => {
+    setEditingNotes(true);
+    requestAnimationFrame(() => notesRef.current?.focus());
+  }, []);
+
+  const handleNotesBlur = useCallback(() => {
+    setEditingNotes(false);
+  }, []);
+
   useEffect(() => {
     if (!task) {
       return;
@@ -51,6 +66,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
     setEffort(task.effort);
     setPriority(task.priority);
     setError(null);
+    setEditingNotes(false);
   }, [task]);
 
   if (!task) {
@@ -91,7 +107,13 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
           </label>
           <label>
             Notes
-            <textarea ref={notesRef} value={notes} onChange={(event) => setNotes(event.target.value)} onKeyDown={handleNotesKeyDown} maxLength={5000} rows={8} />
+            {showNotesPreview ? (
+              <div className="notes-preview" onClick={handleNotesPreviewClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') handleNotesPreviewClick(); }}>
+                <LinkifiedText text={notes} />
+              </div>
+            ) : (
+              <textarea ref={notesRef} value={notes} onChange={(event) => setNotes(event.target.value)} onKeyDown={handleNotesKeyDown} onBlur={handleNotesBlur} maxLength={5000} rows={8} />
+            )}
           </label>
           <label>
             Tag

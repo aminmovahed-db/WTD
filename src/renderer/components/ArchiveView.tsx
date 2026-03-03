@@ -1,4 +1,5 @@
 import type { Column, Task } from '../../shared/types';
+import { LinkifiedText } from './LinkifiedText';
 
 interface ArchiveViewProps {
   tasks: Task[];
@@ -15,7 +16,7 @@ export function ArchiveView({ tasks, onRestore }: ArchiveViewProps): JSX.Element
       {tasks.map((task) => (
         <article className="archive-card" key={task.id}>
           <h4>{task.title}</h4>
-          {task.notes ? <p>{task.notes}</p> : null}
+          {task.notes ? <p><LinkifiedText text={task.notes} /></p> : null}
           <div className="archive-actions">
             <button onClick={() => onRestore(task.id, 'BACKLOG')} type="button">
               Restore to Backlog

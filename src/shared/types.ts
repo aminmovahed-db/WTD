@@ -91,4 +91,5 @@ export interface KanbanApi {
   importJson(input: ImportJsonInput): Promise<ImportResult>;
   pickExportPath(): Promise<string | null>;
   pickImportPath(): Promise<string | null>;
+  openExternal(url: string): Promise<void>;
 }

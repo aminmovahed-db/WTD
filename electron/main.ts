@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { app, BrowserWindow, dialog, ipcMain, nativeImage } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron';
 import type Database from 'better-sqlite3';
 import type { ArchiveTaskInput, CreateTaskInput, DeleteTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
 import { initDatabase } from '../src/main/db';
@@ -93,6 +93,12 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
     }
 
     return result.filePaths[0];
+  });
+
+  ipcMain.handle('shell:openExternal', (_event, url: string) => {
+    if (typeof url === 'string' && /^https?:\/\//.test(url)) {
+      return shell.openExternal(url);
+    }
   });
 }
 

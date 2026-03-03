@@ -27,7 +27,8 @@ const api: KanbanApi = {
   exportJson: (input: ExportJsonInput) => ipcRenderer.invoke('task:exportJson', input) as Promise<void>,
   importJson: (input: ImportJsonInput) => ipcRenderer.invoke('task:importJson', input) as Promise<ImportResult>,
   pickExportPath: () => ipcRenderer.invoke('dialog:pickExportPath') as Promise<string | null>,
-  pickImportPath: () => ipcRenderer.invoke('dialog:pickImportPath') as Promise<string | null>
+  pickImportPath: () => ipcRenderer.invoke('dialog:pickImportPath') as Promise<string | null>,
+  openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url) as Promise<void>
 };
 
 contextBridge.exposeInMainWorld('kanbanApi', api);
