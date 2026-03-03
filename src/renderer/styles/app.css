@@ -639,6 +639,61 @@ select {
   color: var(--text-muted);
 }
 
+.archive-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.archive-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.archive-select-btn {
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.archive-select-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.archive-select-btn--active {
+  background: var(--accent-strong);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.archive-delete-btn {
+  border: 1px solid color-mix(in srgb, var(--danger) 50%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.archive-delete-btn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--danger) 26%, transparent);
+}
+
 .archive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -649,11 +704,33 @@ select {
 }
 
 .archive-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: 10px;
   padding: 12px;
   backdrop-filter: blur(10px);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.archive-card--selected {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  cursor: pointer;
+}
+
+.archive-checkbox {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.archive-checkbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-strong);
+  cursor: pointer;
 }
 
 .archive-card h4 {

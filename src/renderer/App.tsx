@@ -193,6 +193,15 @@ export default function App(): JSX.Element {
     }
   }
 
+  async function deleteArchivedTasks(taskIds: string[]): Promise<void> {
+    try {
+      await Promise.all(taskIds.map((id) => window.kanbanApi.deleteTask({ id })));
+      await loadAll();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete archived tasks');
+    }
+  }
+
   async function handleExport(): Promise<void> {
     try {
       const filePath = await window.kanbanApi.pickExportPath();
@@ -464,7 +473,7 @@ export default function App(): JSX.Element {
       {loading ? (
         <p className="loading">Loading...</p>
       ) : showArchive ? (
-        <ArchiveView tasks={archivedTasks} onRestore={restoreTask} />
+        <ArchiveView tasks={archivedTasks} onRestore={restoreTask} onDelete={deleteArchivedTasks} />
       ) : (
         <DndContext
           sensors={sensors}
