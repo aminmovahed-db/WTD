@@ -99,7 +99,7 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
                 />
               </label>
             ) : null}
-            <h4>{task.title}</h4>
+            <h4 title={task.title}>{task.title}</h4>
             {task.tag ? (
               <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span>
             ) : null}
