@@ -775,9 +775,21 @@ select {
   border-bottom-color: #fff;
 }
 
-.archive-actions {
-  display: flex;
-  gap: 8px;
+.archive-restore-btn {
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.archive-restore-btn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 26%, transparent);
 }
 
 .modal-backdrop {

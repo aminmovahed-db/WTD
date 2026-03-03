@@ -38,6 +38,14 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
     exitSelectMode();
   }
 
+  async function handleRestore(column: Column): Promise<void> {
+    if (selected.size === 0) return;
+    for (const id of selected) {
+      await onRestore(id, column);
+    }
+    exitSelectMode();
+  }
+
   if (tasks.length === 0) {
     return <p className="empty-state">No archived tasks yet.</p>;
   }
@@ -53,9 +61,17 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
           {selectMode ? 'Cancel' : 'Select'}
         </button>
         {selectMode && selected.size > 0 ? (
-          <button type="button" className="archive-delete-btn" onClick={handleDelete}>
-            Delete {selected.size} task{selected.size > 1 ? 's' : ''}
-          </button>
+          <>
+            <button type="button" className="archive-restore-btn" onClick={() => handleRestore('BACKLOG')}>
+              Restore to Backlog
+            </button>
+            <button type="button" className="archive-restore-btn" onClick={() => handleRestore('DONE')}>
+              Restore to Done
+            </button>
+            <button type="button" className="archive-delete-btn" onClick={handleDelete}>
+              Delete {selected.size} task{selected.size > 1 ? 's' : ''}
+            </button>
+          </>
         ) : null}
       </div>
       <div className="archive-grid">
@@ -76,16 +92,6 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
             ) : null}
             <h4>{task.title}</h4>
             {task.notes ? <p><LinkifiedText text={task.notes} /></p> : null}
-            {!selectMode ? (
-              <div className="archive-actions">
-                <button onClick={() => onRestore(task.id, 'BACKLOG')} type="button">
-                  Restore to Backlog
-                </button>
-                <button onClick={() => onRestore(task.id, 'DONE')} type="button">
-                  Restore to Done
-                </button>
-              </div>
-            ) : null}
           </article>
         ))}
       </div>
