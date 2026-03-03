@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { Column, Task } from '../../shared/types';
 import { LinkifiedText } from './LinkifiedText';
+import { PriorityTag } from './PriorityTag';
+import { tagColorStyle } from '../utils/tagColors';
 
 interface ArchiveViewProps {
   tasks: Task[];
@@ -11,6 +13,7 @@ interface ArchiveViewProps {
 export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): JSX.Element {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
 
   function toggleSelect(id: string): void {
     setSelected((prev) => {
@@ -46,6 +49,12 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
     exitSelectMode();
   }
 
+  const handleBackdropClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      setViewingTask(null);
+    }
+  }, []);
+
   if (tasks.length === 0) {
     return <p className="empty-state">No archived tasks yet.</p>;
   }
@@ -79,7 +88,7 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
           <article
             className={`archive-card${selectMode && selected.has(task.id) ? ' archive-card--selected' : ''}`}
             key={task.id}
-            onClick={selectMode ? () => toggleSelect(task.id) : undefined}
+            onClick={selectMode ? () => toggleSelect(task.id) : () => setViewingTask(task)}
           >
             {selectMode ? (
               <label className="archive-checkbox" onClick={(e) => e.stopPropagation()}>
@@ -91,10 +100,56 @@ export function ArchiveView({ tasks, onRestore, onDelete }: ArchiveViewProps): J
               </label>
             ) : null}
             <h4>{task.title}</h4>
-            {task.notes ? <p><LinkifiedText text={task.notes} /></p> : null}
+            {task.tag ? (
+              <span className="task-tag" style={tagColorStyle(task.tag)}>{task.tag}</span>
+            ) : null}
           </article>
         ))}
       </div>
+
+      {viewingTask ? (
+        <div className="modal-backdrop" onClick={handleBackdropClick}>
+          <div className="modal-card archive-detail-modal">
+            <header>
+              <h3>{viewingTask.title}</h3>
+            </header>
+            <div className="archive-detail-body">
+              {viewingTask.priority !== 'NONE' ? (
+                <div className="archive-detail-row">
+                  <span className="archive-detail-label">Priority</span>
+                  <PriorityTag priority={viewingTask.priority} />
+                </div>
+              ) : null}
+              {viewingTask.tag ? (
+                <div className="archive-detail-row">
+                  <span className="archive-detail-label">Tag</span>
+                  <span className="task-tag" style={tagColorStyle(viewingTask.tag)}>{viewingTask.tag}</span>
+                </div>
+              ) : null}
+              {viewingTask.effort > 0 ? (
+                <div className="archive-detail-row">
+                  <span className="archive-detail-label">Effort</span>
+                  <span className="archive-detail-value">{viewingTask.effort}</span>
+                </div>
+              ) : null}
+              {viewingTask.notes ? (
+                <div className="archive-detail-notes">
+                  <span className="archive-detail-label">Notes</span>
+                  <div className="archive-detail-notes-content">
+                    <LinkifiedText text={viewingTask.notes} />
+                  </div>
+                </div>
+              ) : null}
+              {viewingTask.archived_at ? (
+                <div className="archive-detail-row">
+                  <span className="archive-detail-label">Archived</span>
+                  <span className="archive-detail-value">{new Date(viewingTask.archived_at).toLocaleDateString()}</span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

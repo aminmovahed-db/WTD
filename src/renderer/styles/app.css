@@ -710,7 +710,13 @@ select {
   border-radius: 10px;
   padding: 12px;
   backdrop-filter: blur(10px);
-  transition: border-color 140ms ease, box-shadow 140ms ease;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.archive-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .archive-card--selected {
@@ -734,13 +740,61 @@ select {
 }
 
 .archive-card h4 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
-.archive-card p {
-  margin: 0 0 10px;
+.archive-card .task-tag {
+  margin-top: 2px;
+}
+
+.archive-detail-modal {
+  width: min(540px, 100%);
+}
+
+.archive-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.archive-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.archive-detail-label {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  min-width: 70px;
+}
+
+.archive-detail-value {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.archive-detail-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.archive-detail-notes-content {
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-strong) 96%, transparent);
+  color: var(--text);
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.55;
   white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .notes-preview {
