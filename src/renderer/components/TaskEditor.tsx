@@ -20,6 +20,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
   const [error, setError] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState(false);
   const notesRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleNotesKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key !== ' ') return;
@@ -54,6 +55,22 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
   const handleNotesBlur = useCallback(() => {
     setEditingNotes(false);
   }, []);
+
+  useEffect(() => {
+    if (!task) {
+      return;
+    }
+
+    const handleGlobalKeyDown = (e: globalThis.KeyboardEvent): void => {
+      if (e.key === 'Enter' && e.metaKey) {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    };
+
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [task]);
 
   useEffect(() => {
     if (!task) {
@@ -100,7 +117,7 @@ export function TaskEditor({ task, onClose, onSave }: TaskEditorProps): JSX.Elem
         <header>
           <h3>Edit Task</h3>
         </header>
-        <form onSubmit={handleSubmit} className="task-editor-form">
+        <form ref={formRef} onSubmit={handleSubmit} className="task-editor-form">
           <label>
             Title
             <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
