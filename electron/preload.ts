@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type {
+  AppInfo,
   ArchiveTaskInput,
   CreateTaskInput,
   DeleteTaskInput,
@@ -28,7 +29,8 @@ const api: KanbanApi = {
   importJson: (input: ImportJsonInput) => ipcRenderer.invoke('task:importJson', input) as Promise<ImportResult>,
   pickExportPath: () => ipcRenderer.invoke('dialog:pickExportPath') as Promise<string | null>,
   pickImportPath: () => ipcRenderer.invoke('dialog:pickImportPath') as Promise<string | null>,
-  openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url) as Promise<void>
+  openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url) as Promise<void>,
+  getAppInfo: () => ipcRenderer.invoke('app:getInfo') as Promise<AppInfo>
 };
 
 contextBridge.exposeInMainWorld('kanbanApi', api);

@@ -82,12 +82,31 @@ select {
   flex-shrink: 0;
 }
 
+.toolbar-icon-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 12px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.toolbar-icon-btn:hover {
+  transform: scale(1.06);
+  filter: brightness(1.12);
+}
+
+.toolbar-icon-btn:active {
+  transform: scale(0.96);
+}
+
 .toolbar-icon {
   height: 67.5px;
   width: 67.5px;
   border-radius: 10px;
   object-fit: contain;
-  flex-shrink: 0;
+  display: block;
 }
 
 .toolbar {
@@ -1016,6 +1035,116 @@ select {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* About modal */
+
+.about-modal {
+  width: min(380px, 100%);
+  text-align: center;
+  animation: about-in 200ms ease;
+}
+
+.about-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.about-icon {
+  height: 80px;
+  width: 80px;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+.about-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.about-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.about-version {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.about-description {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.about-details {
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.about-detail-row dt {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.about-detail-row dd {
+  margin: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.about-footer button {
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+  color: var(--text);
+  padding: 7px 24px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.about-footer button:hover {
+  border-color: var(--accent);
+}
+
+@keyframes about-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 

@@ -6,6 +6,7 @@ interface ToolbarProps {
   onExport: () => Promise<void>;
   onImport: (mode: 'merge' | 'replace') => Promise<void>;
   importSummary: ImportResult | null;
+  onAbout: () => void;
 }
 
 export function Toolbar({
@@ -13,11 +14,14 @@ export function Toolbar({
   onToggleView,
   onExport,
   onImport,
-  importSummary
+  importSummary,
+  onAbout
 }: ToolbarProps): JSX.Element {
   return (
     <div className="toolbar-row">
-      <img src="./icon.png" alt="WTD" className="toolbar-icon" />
+      <button type="button" className="toolbar-icon-btn" onClick={onAbout} aria-label="About WTD">
+        <img src="./icon.png" alt="WTD" className="toolbar-icon" />
+      </button>
       <header className="toolbar">
         <div className="view-switch">
           <button type="button" onClick={() => onToggleView(false)} data-active={!showingArchive || undefined}>

@@ -15,6 +15,7 @@ import {
   type DragStartEvent
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
+import { AboutModal } from './components/AboutModal';
 import { ArchiveView } from './components/ArchiveView';
 import { Board } from './components/Board';
 import { TagFilter, type FilterState } from './components/TagFilter';
@@ -104,6 +105,7 @@ export default function App(): JSX.Element {
   const [dragSnapshot, setDragSnapshot] = useState<Task[] | null>(null);
   const [filters, setFilters] = useState<FilterState>({ tags: [], priorities: [] });
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -435,6 +437,7 @@ export default function App(): JSX.Element {
         onExport={handleExport}
         onImport={handleImport}
         importSummary={importSummary}
+        onAbout={() => setShowAbout(true)}
       />
 
       {error ? (
@@ -510,6 +513,8 @@ export default function App(): JSX.Element {
           onClose={() => setShowFilterModal(false)}
         />
       ) : null}
+
+      {showAbout ? <AboutModal onClose={() => setShowAbout(false)} /> : null}
     </div>
   );
 }

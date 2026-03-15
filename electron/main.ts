@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron';
 import type Database from 'better-sqlite3';
-import type { ArchiveTaskInput, CreateTaskInput, DeleteTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
+import type { AppInfo, ArchiveTaskInput, CreateTaskInput, DeleteTaskInput, ImportJsonInput, MoveTaskInput, ReorderColumnInput, RestoreTaskInput, UpdateTaskInput } from '../src/shared/types';
 import { initDatabase } from '../src/main/db';
 import { exportTasksToJson, importTasksFromJson } from '../src/main/db/exportImport';
 import { TaskRepository } from '../src/main/db/taskRepo';
@@ -100,6 +100,15 @@ function registerIpcHandlers(repo: TaskRepository, db: Database.Database): void 
       return shell.openExternal(url);
     }
   });
+
+  ipcMain.handle('app:getInfo', (): AppInfo => ({
+    name: 'WTD',
+    version: app.getVersion(),
+    description: 'Local-first task board',
+    electronVersion: process.versions.electron,
+    chromeVersion: process.versions.chrome,
+    nodeVersion: process.versions.node
+  }));
 }
 
 app.whenReady().then(() => {

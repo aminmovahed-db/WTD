@@ -77,6 +77,15 @@ export interface ImportResult {
   errors: string[];
 }
 
+export interface AppInfo {
+  name: string;
+  version: string;
+  description: string;
+  electronVersion: string;
+  chromeVersion: string;
+  nodeVersion: string;
+}
+
 export interface KanbanApi {
   listActiveTasks(): Promise<Task[]>;
   createTask(input: CreateTaskInput): Promise<Task>;
@@ -92,4 +101,5 @@ export interface KanbanApi {
   pickExportPath(): Promise<string | null>;
   pickImportPath(): Promise<string | null>;
   openExternal(url: string): Promise<void>;
+  getAppInfo(): Promise<AppInfo>;
 }

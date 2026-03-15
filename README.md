@@ -98,6 +98,68 @@ The installer is written to the `release/` directory.
 
 > **Tip:** To customise the app icon, place `icon.icns` in the `build/` folder before packaging.
 
+## Releasing a New Version
+
+### 1. Switch to `dev` and make sure everything is clean
+
+```bash
+git checkout dev
+git pull
+npm test
+```
+
+### 2. Bump the version
+
+Pick the bump level that matches your changes:
+
+```bash
+npm version patch   # bug fixes         — 0.1.0 → 0.1.1
+npm version minor   # new features      — 0.1.0 → 0.2.0
+npm version major   # breaking changes  — 0.1.0 → 1.0.0
+```
+
+This does three things automatically:
+- Updates `"version"` in `package.json`
+- Creates a git commit (`v0.1.1`)
+- Creates a git tag (`v0.1.1`)
+
+### 3. Merge into `main` and push
+
+```bash
+git checkout main
+git merge dev
+git push origin main --tags
+```
+
+### 4. Build the distributable
+
+```bash
+npm run dist:mac
+```
+
+The DMG is written to the `release/` directory.
+
+### 5. Add release notes
+
+Update the **Release Notes** section at the bottom of this README, then commit:
+
+```bash
+git add README.md
+git commit -m "docs: add release notes for vX.Y.Z"
+git push
+```
+
+### Where the version appears
+
+| Location | How it gets there |
+|---|---|
+| `package.json` `"version"` | Set by `npm version` |
+| About modal (in-app) | Read at runtime via `app.getVersion()` |
+| macOS `Info.plist` (`CFBundleVersion`) | Set by electron-builder from `package.json` at build time |
+| README badge | **Manual** — update the badge URL after bumping |
+
+---
+
 ## Project Structure
 
 ```
