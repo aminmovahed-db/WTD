@@ -49,7 +49,50 @@ Ask the user which version bump to apply:
 
 Use the AskQuestion tool with these three options.
 
-### Step 3: Bump the version
+### Step 3: Generate changelog from commits
+
+Gather all commits since the last release tag. This must run **before** the
+version bump so the bump commit itself is not included.
+
+```bash
+# Find the most recent version tag (falls back to first commit if none exist)
+LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
+
+# List commits since that tag
+git log "${LAST_TAG}..HEAD" --oneline --no-merges
+```
+
+Categorise each commit into one of these groups based on its message prefix.
+If a commit has no recognised prefix, put it under **Other**.
+
+| Prefix | Category |
+|--------|----------|
+| `feat` / `add` | **New Features** |
+| `fix` | **Bug Fixes** |
+| `refactor` / `perf` | **Improvements** |
+| `docs` | **Documentation** |
+| `test` | **Tests** |
+| `style` / `chore` / `build` / `ci` | **Maintenance** |
+
+Format the result as a markdown list grouped by category, e.g.:
+
+```markdown
+### New Features
+- Add About modal showing app version and runtime info
+- Add keyboard shortcuts for column navigation
+
+### Bug Fixes
+- Fix drag-drop into empty columns
+
+### Improvements
+- Compact archive cards into inline chip layout
+```
+
+Omit empty categories. Strip the prefix from each line so the notes read
+naturally. Present the draft changelog to the user and let them edit, reorder,
+or remove entries before proceeding.
+
+### Step 4: Bump the version
 
 ```bash
 npm version <patch|minor|major>
@@ -63,7 +106,7 @@ Capture the new version string for later steps:
 node -p "require('./package.json').version"
 ```
 
-### Step 4: Merge into main and push
+### Step 5: Merge into main and push
 
 ```bash
 git checkout main
@@ -75,7 +118,7 @@ git merge main   # keep dev in sync
 git push origin dev
 ```
 
-### Step 5: Build the DMG
+### Step 6: Build the DMG
 
 ```bash
 npm run dist:mac
@@ -87,29 +130,30 @@ The DMG is written to `release/`. Find the exact filename:
 ls release/*.dmg
 ```
 
-### Step 6: Create a GitHub Release
+### Step 7: Create a GitHub Release
 
-Ask the user for a short summary of what changed (or infer from recent commits).
+Use the changelog from Step 3 (user-approved) as the release body.
 
 ```bash
 gh release create "v<VERSION>" release/*.dmg \
   --title "v<VERSION>" \
-  --notes "<release notes>"
+  --notes "<formatted changelog from Step 3>"
 ```
 
-### Step 7: Update README badge and release notes
+### Step 8: Update README badge and release notes
 
 Update the version badge in `README.md`:
 
 - Find: `version-X.Y.Z-blue`
 - Replace with: `version-<NEW_VERSION>-blue`
 
-Append a new entry under the **Release Notes** section at the bottom of `README.md`:
+Append a new entry under the **Release Notes** section at the bottom of
+`README.md` using the changelog from Step 3:
 
 ```markdown
 ### <NEW_VERSION>
 
-- <summary of changes>
+<formatted changelog from Step 3>
 ```
 
 Commit and push:
@@ -125,7 +169,7 @@ git push origin main
 git checkout dev
 ```
 
-### Step 8: Confirm
+### Step 9: Confirm
 
 Print a summary:
 
